@@ -1,0 +1,41 @@
+{
+	email you@example.com
+}
+
+duckermind.com, www.duckermind.com {
+	root * /var/www/duckermind.com
+	file_server
+	encode zstd gzip
+}
+
+agora.duckermind.com {
+	redir https://duckermind.com/projects/agora/ 308
+}
+
+noesis.duckermind.com {
+	redir https://duckermind.com/projects/noesis/ 308
+}
+
+peras.duckermind.com {
+	redir https://duckermind.com/projects/peras/ 308
+}
+
+physis.duckermind.com {
+	redir https://duckermind.com/projects/physis/ 308
+}
+
+titan.duckermind.com {
+	redir https://duckermind.com/projects/titan/ 308
+}
+
+# Later upgrade path examples:
+#
+# agora.duckermind.com {
+#   reverse_proxy 127.0.0.1:3200
+# }
+#
+# noesis.duckermind.com {
+#   root * /var/www/noesis.duckermind.com
+#   file_server
+#   encode zstd gzip
+# }

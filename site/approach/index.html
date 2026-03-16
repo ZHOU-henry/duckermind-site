@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Duckermind Approach | Design, Research, and Delivery Logic</title>
+    <meta
+      name="description"
+      content="How Duckermind structures design, research, product implementation, and quality control across its portfolio."
+    />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script defer src="/assets/site.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-copy">
+              <strong>Duckermind</strong>
+              <span>Approach</span>
+            </span>
+          </a>
+          <nav class="nav">
+            <a href="/">Home</a>
+            <a href="/portfolio/">Portfolio</a>
+            <a href="#views">Views</a>
+            <a href="#deployment">Deployment</a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="mini-hero" data-reveal>
+          <span class="eyebrow">Method</span>
+          <h1 class="page-title">Build with research discipline, not presentation theater.</h1>
+          <p class="page-lede">
+            The site language takes cues from world-class technology and AI
+            organizations, but it is adapted for a multi-program portfolio:
+            editorial restraint, visible systems thinking, dense but readable
+            information, and clear hierarchy between parent brand and child
+            products.
+          </p>
+        </section>
+
+        <section class="section" id="views">
+          <div class="section-head" data-reveal>
+            <div>
+              <span class="section-kicker">Three Critical Views</span>
+              <h2>What makes this design direction defensible.</h2>
+            </div>
+          </div>
+
+          <div class="story-grid">
+            <article class="narrative-card" data-reveal>
+              <span class="panel-label">Brand View</span>
+              <h3>The root site should feel like a command atlas, not a pitch deck.</h3>
+              <p>
+                The most common mistake is to make the parent domain louder than
+                the projects. Here, the parent site is calm, strategic, and
+                orienting. It gives shape to the portfolio rather than competing
+                with the underlying products.
+              </p>
+            </article>
+            <article class="narrative-card" data-reveal>
+              <span class="panel-label">Systems View</span>
+              <h3>Root pages and subdomains should be staged separately.</h3>
+              <p>
+                A subdomain does not need a dedicated application on day one.
+                Redirects now, real apps later, keeps the architecture clean and
+                the deployment burden low.
+              </p>
+            </article>
+            <article class="narrative-card" data-reveal>
+              <span class="panel-label">Research View</span>
+              <h3>High-trust interfaces need visible methodology.</h3>
+              <p>
+                Research and intelligence products look more credible when the
+                operating model, evidence discipline, and structure are visible
+                from the first page instead of hidden in docs.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="deployment">
+          <div class="section-head" data-reveal>
+            <div>
+              <span class="section-kicker">Deployment Logic</span>
+              <h2>The lowest-friction rollout path.</h2>
+            </div>
+          </div>
+
+          <div class="step-grid">
+            <article class="step-card" data-reveal>
+              <span class="panel-label">1</span>
+              <h3>Serve the main site from Caddy static files</h3>
+              <p>
+                This keeps the origin simple and easy to maintain behind
+                Cloudflare.
+              </p>
+            </article>
+            <article class="step-card" data-reveal>
+              <span class="panel-label">2</span>
+              <h3>Create five DNS records for the project subdomains</h3>
+              <p>
+                Each record points to the same server. Caddy decides whether the
+                host serves content, redirects, or reverse proxies.
+              </p>
+            </article>
+            <article class="step-card" data-reveal>
+              <span class="panel-label">3</span>
+              <h3>Start with redirects for all five child programs</h3>
+              <p>
+                The audience gets a clean domain system immediately without
+                needing five separate deployments on the first day.
+              </p>
+            </article>
+            <article class="step-card" data-reveal>
+              <span class="panel-label">4</span>
+              <h3>Promote each subdomain only when that product is ready</h3>
+              <p>
+                Agora can become the first true application host, with the other
+                four staying as curated project pages until they mature.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <p class="footer-note">Duckermind approach: design, systems, and deployment logic.</p>
+          <nav class="nav">
+            <a href="/">Home</a>
+            <a href="/portfolio/">Portfolio</a>
+            <a href="/projects/agora/">Agora</a>
+            <a href="/projects/physis/">Physis</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
