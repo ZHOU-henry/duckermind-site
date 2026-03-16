@@ -9,7 +9,9 @@ duckermind.com, www.duckermind.com {
 }
 
 agora.duckermind.com {
-	redir https://duckermind.com/projects/agora/ 308
+	root * /var/www/agora.duckermind.com
+	file_server
+	encode zstd gzip
 }
 
 noesis.duckermind.com {
