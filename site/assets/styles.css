@@ -237,6 +237,8 @@ img {
 
 .nav a:hover,
 .nav a:focus-visible,
+.subdomain-nav a:hover,
+.subdomain-nav a:focus-visible,
 .link-pill:hover,
 .link-pill:focus-visible {
   background: rgba(var(--accent-rgb), 0.08);
@@ -252,6 +254,7 @@ img {
   display: grid;
   gap: 1.5rem;
   padding: 2.8rem 0 1rem;
+  align-items: stretch;
 }
 
 .hero-home {
@@ -313,6 +316,7 @@ img {
 .panel-shell,
 .project-hero-shell {
   padding: 1.8rem;
+  min-width: 0;
 }
 
 .hero-copy-block {
@@ -320,6 +324,7 @@ img {
   display: grid;
   align-content: space-between;
   gap: 1.6rem;
+  min-width: 0;
 }
 
 .hero-copy-block::before,
@@ -395,6 +400,8 @@ img {
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 0.94;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
 .hero-title {
@@ -1046,6 +1053,7 @@ img {
   overflow: hidden;
   padding: 0;
   min-height: 34rem;
+  min-width: 0;
 }
 
 .hero-visual img,
