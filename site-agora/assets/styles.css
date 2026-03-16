@@ -136,6 +136,12 @@ img {
   padding: 1rem 0;
 }
 
+.header-stack {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: end;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -218,8 +224,11 @@ img {
 .nav a {
   padding: 0.72rem 0.96rem;
   border-radius: 999px;
-  color: var(--ink-soft);
+  border: 1px solid rgba(16, 23, 34, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
   font-size: 0.94rem;
+  font-weight: 700;
   transition:
     transform 160ms ease,
     color 160ms ease,
@@ -1017,6 +1026,22 @@ img {
   font-weight: 700;
 }
 
+.contact-band {
+  margin-top: 1.3rem;
+  padding: 1.4rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(16, 23, 34, 0.08);
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(14, 22, 33, 0.06);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+}
+
 .hero-visual {
   overflow: hidden;
   padding: 0;
@@ -1176,7 +1201,8 @@ img {
   .topbar-inner,
   .footer-inner,
   .section-head,
-  .line-top {
+  .line-top,
+  .contact-grid {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -1232,8 +1258,16 @@ img {
     justify-content: flex-start;
   }
 
+  .header-stack {
+    justify-items: start;
+  }
+
   .hero-visual {
     min-height: auto;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
   }
 
   .signal-node {

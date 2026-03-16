@@ -6,7 +6,7 @@
     <title>Agora | Duckermind</title>
     <meta
       name="description"
-      content="Agora is Duckermind's agent marketplace and delivery control layer for customer demand, builder response, engagements, and operations."
+      content="Agora is Duckermind's AI agent marketplace and delivery control layer."
     />
     <link rel="stylesheet" href="/assets/styles.css" />
     <script defer src="/assets/site.js"></script>
@@ -19,210 +19,101 @@
             <span class="brand-mark" aria-hidden="true"></span>
             <span class="brand-copy">
               <strong>Duckermind</strong>
-              <span>Agora dossier</span>
+              <span>Agora</span>
             </span>
           </a>
-          <nav class="nav">
-            <a href="/">Home</a>
-            <a href="/portfolio/">Programs</a>
-            <a href="/approach/">Operating Model</a>
-            <a href="https://agora.duckermind.com">Standalone site</a>
-          </nav>
+          <div class="header-stack">
+            <nav class="nav" aria-label="Primary">
+              <a href="/">Home</a>
+              <a href="/portfolio/">Programs</a>
+              <a href="/approach/">Approach</a>
+              <a href="#contact">Contact</a>
+            </nav>
+            <nav class="subdomain-nav" aria-label="Project domains">
+              <a href="https://agora.duckermind.com">Agora</a>
+              <a href="https://noesis.duckermind.com">Noesis</a>
+              <a href="https://peras.duckermind.com">Peras</a>
+              <a href="https://physis.duckermind.com">Physis</a>
+              <a href="https://titan.duckermind.com">Titan</a>
+              <a href="/projects/autogenesis/">Autogenesis</a>
+            </nav>
+          </div>
         </div>
       </header>
 
       <main class="content">
-        <section class="hero">
-          <div class="panel-dark project-hero-shell" data-reveal>
-            <article>
+        <section class="hero hero-home">
+          <article class="panel hero-copy-block" data-reveal>
+            <div class="quick-intro">
               <span class="eyebrow">Agora</span>
-              <h1 class="project-title">An AI agent market that behaves like a delivery system.</h1>
-              <p class="project-lede">
-                Agora turns customer demand, builder response, and delivery
-                into one visible market flow.
+              <h1 class="hero-title">The market layer for AI agents.</h1>
+              <p class="hero-lede">
+                Agora turns demand, response, and delivery into one visible
+                commercial flow.
               </p>
-              <div class="project-links">
-                <a class="button" href="https://agora.duckermind.com">Open Agora</a>
-                <a class="button-secondary" href="https://github.com/ZHOU-henry/agora">GitHub</a>
+            </div>
+            <div class="button-row">
+              <a class="button" href="https://agora.duckermind.com">Open product site</a>
+              <a class="button-secondary" href="https://github.com/ZHOU-henry/agora">GitHub</a>
+            </div>
+          </article>
+          <aside class="hero-visual visual-card" data-reveal>
+            <div class="hero-visual-shell">
+              <div class="visual-card-image">
+                <img src="/assets/images/robotics-lab.jpg" alt="Advanced robotics and control systems lab" loading="eager" />
               </div>
+              <div class="hero-visual-copy">
+                <span class="panel-label">Core object</span>
+                <strong>Demand to response to delivery.</strong>
+                <p class="mini-note">Built for real workflows, not static catalogs.</p>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="section">
+          <div class="story-grid">
+            <article class="story-card" data-reveal>
+              <span class="panel-label">Demand</span>
+              <h3 class="card-title">Publish real needs</h3>
+              <p>Customer demand becomes a visible operating object.</p>
             </article>
-
-            <aside class="project-side">
-              <div class="project-signal-card">
-                <span class="status-pill">Stage</span>
-                <strong>MVP 2.5 + early 3.0 foundation</strong>
-                <p class="card-copy">
-                  Already a real monorepo with role-based surfaces and workflow objects.
-                </p>
-              </div>
-              <div class="project-signal-card">
-                <span class="domain-chip">Primary domain</span>
-                <strong>agora.duckermind.com</strong>
-                <p class="card-copy">
-                  Standalone premium public page now, candidate live app host later.
-                </p>
-              </div>
-              <div class="project-signal-card">
-                <span class="signal-label">Core object</span>
-                <strong>Demand to response to delivery</strong>
-                <p class="card-copy">The system is built around transaction flow, not catalog decoration.</p>
-              </div>
-            </aside>
+            <article class="story-card" data-reveal>
+              <span class="panel-label">Supply</span>
+              <h3 class="card-title">Let builders respond</h3>
+              <p>Providers answer with timing, scope, and delivery posture.</p>
+            </article>
+            <article class="story-card" data-reveal>
+              <span class="panel-label">Delivery</span>
+              <h3 class="card-title">Keep execution visible</h3>
+              <p>Accepted work becomes a trackable engagement instead of disappearing offline.</p>
+            </article>
           </div>
         </section>
 
-        <section class="section">
-          <div class="section-shell panel-shell">
-            <div class="section-head" data-reveal>
+        <section class="section" id="contact">
+          <div class="contact-band" data-reveal>
+            <div class="contact-grid">
               <div>
-                <span class="section-kicker">Why Agora Exists</span>
-                <h2>Most AI agent platforms stop before the hard middle.</h2>
+                <span class="section-kicker">Contact Us</span>
+                <h2 class="card-title">Talk to Duckermind about Agora.</h2>
+                <p class="section-note">Product collaboration, pilots, and operating design.</p>
               </div>
-              <p class="section-note">
-                The hard part is everything between interest and delivery.
-              </p>
-            </div>
-
-            <div class="story-grid">
-              <article class="story-card" data-reveal>
-                <span class="panel-label">Demand</span>
-                <h3 class="card-title">Customer needs become public operating objects</h3>
-                <p>Agora lets demand exist as something builders can see and respond to.</p>
-              </article>
-              <article class="story-card" data-reveal>
-                <span class="panel-label">Supply</span>
-                <h3 class="card-title">Builders answer with timing, posture, and proof</h3>
-                <p>Provider behavior is modeled as an active market response rather than a static profile.</p>
-              </article>
-              <article class="story-card" data-reveal>
-                <span class="panel-label">Delivery</span>
-                <h3 class="card-title">Accepted work turns into a visible engagement workspace</h3>
-                <p>Milestones, incidents, feedback, and confirmation stay attached to the same object.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-shell panel-shell">
-            <div class="section-head" data-reveal>
-              <div>
-                <span class="section-kicker">System Surface</span>
-                <h2>Four layers make the market legible.</h2>
+              <div class="button-row">
+                <a class="button" href="mailto:zhouzehao2018@163.com">zhouzehao2018@163.com</a>
               </div>
             </div>
-
-            <div class="flow-grid">
-              <article class="flow-card" data-reveal>
-                <span class="panel-label">01</span>
-                <h3 class="card-title">Demand board</h3>
-                <p class="card-copy">Customers publish real needs instead of filling invisible forms.</p>
-              </article>
-              <article class="flow-card" data-reveal>
-                <span class="panel-label">02</span>
-                <h3 class="card-title">Builder response</h3>
-                <p class="card-copy">Providers respond with timing, offer structure, and execution logic.</p>
-              </article>
-              <article class="flow-card" data-reveal>
-                <span class="panel-label">03</span>
-                <h3 class="card-title">Engagement workspace</h3>
-                <p class="card-copy">Accepted work turns into an operational workspace with milestones and proof.</p>
-              </article>
-              <article class="flow-card" data-reveal>
-                <span class="panel-label">04</span>
-                <h3 class="card-title">Ops visibility</h3>
-                <p class="card-copy">Review queues, health signals, and execution pressure stay observable.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-band" data-reveal>
-            <div class="section-band-grid">
-              <div class="callout-stack">
-                <span class="section-kicker">Implementation Posture</span>
-                <h2 class="page-title">Already real software, not a concept-video shell.</h2>
-                <p class="callout-copy">
-                  Agora already exists as a real product repo with live roles,
-                  workflows, and data models.
-                </p>
-              </div>
-              <div class="callout-grid">
-                <article class="callout-card">
-                  <span class="panel-label">Web</span>
-                  <strong>Next.js 16 + React 19</strong>
-                </article>
-                <article class="callout-card">
-                  <span class="panel-label">API</span>
-                  <strong>Fastify + Prisma</strong>
-                </article>
-                <article class="callout-card">
-                  <span class="panel-label">Data</span>
-                  <strong>PostgreSQL workflow records</strong>
-                </article>
-                <article class="callout-card">
-                  <span class="panel-label">UX</span>
-                  <strong>Customer, builder, and ops surfaces</strong>
-                </article>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-shell panel-shell">
-            <div class="section-head" data-reveal>
-              <div>
-                <span class="section-kicker">Near-Term Path</span>
-                <h2>What Agora should sharpen next.</h2>
-              </div>
-            </div>
-
-            <div class="roadmap-grid">
-              <article class="phase-card" data-reveal>
-                <span class="panel-label">Now</span>
-                <h3 class="card-title">Strengthen the demand-response market loop</h3>
-                <p>Make publishing, response quality, and conversion visibility even more decisive.</p>
-              </article>
-              <article class="phase-card" data-reveal>
-                <span class="panel-label">Next</span>
-                <h3 class="card-title">Increase proof, trust, and commercial structure</h3>
-                <p>Builder verification, proof of work, quotes, and post-delivery records should harden further.</p>
-              </article>
-              <article class="phase-card" data-reveal>
-                <span class="panel-label">Later</span>
-                <h3 class="card-title">Promote the standalone host into a live application</h3>
-                <p>When production conditions are ready, `agora.duckermind.com` can move from static surface to app runtime.</p>
-              </article>
-              <article class="phase-card" data-reveal>
-                <span class="panel-label">Portfolio role</span>
-                <h3 class="card-title">Lead the commercial edge of Duckermind</h3>
-                <p>Agora is the most immediate path from portfolio narrative into market behavior.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="panel-dark project-quote" data-reveal>
-            <span class="section-kicker">Agora in one line</span>
-            <p class="quote-copy">
-              The point is not to show agents. The point is to show how agent
-              work becomes buyable, operable, and accountable.
-            </p>
           </div>
         </section>
       </main>
 
       <footer class="footer">
         <div class="footer-inner">
-          <p class="footer-note">Agora is Duckermind's lead commercial product surface.</p>
+          <p class="footer-note">Agora is Duckermind's marketplace and delivery control layer.</p>
           <nav class="footer-links">
-            <a class="link-pill" href="/portfolio/">Programs</a>
-            <a class="link-pill" href="/approach/">Operating Model</a>
-            <a class="link-pill" href="https://agora.duckermind.com">Standalone site</a>
+            <a class="link-pill" href="https://agora.duckermind.com">Open Agora</a>
             <a class="link-pill" href="https://github.com/ZHOU-henry/agora">GitHub</a>
+            <a class="link-pill" href="mailto:zhouzehao2018@163.com">Contact</a>
           </nav>
         </div>
       </footer>
