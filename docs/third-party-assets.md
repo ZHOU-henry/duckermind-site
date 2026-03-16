@@ -33,6 +33,60 @@ clear reuse permission.
   `Jorge Zapata`
 - Retrieved: `2026-03-16`
 
+### `site/assets/images/future-city.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/a-digital-rendering-of-a-futuristic-city-sHoitMpbE5I>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1692606742912-b4f9c7102869`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/cube-structure.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/a-white-cube-with-blue-squares-4sRFTaQSM8Q>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1665690399850-036127c5da17`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/synth-city.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/a-city-in-the-middle-of-a-city-Vc0CmuIfMg0>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1655720408861-8b04c0724fd9`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/robot-white.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/a-silver-robot-is-standing-in-front-of-a-white-wall-VN5LHGBwBsU>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1676115201783-7c13592cb05d`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/robot-metal.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/black-and-brown-metal-robot-bJgboK4vwvA>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1610842920278-a47162bf2a00`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/matrix-art.jpg`
+
+- Source page:
+  <https://unsplash.com/photos/matrix-illustration-pKeF6Tt3c08>
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1483213097419-365e22f0f258`
+- Retrieved: `2026-03-16`
+
+### `site/assets/images/circuit-board.jpg`
+
+- Source CDN URL:
+  `https://images.unsplash.com/photo-1518770660439-4636190af475`
+- Retrieved: `2026-03-16`
+
 ## Local Policy
 
 - Keep the number of imported third-party visual assets small.
