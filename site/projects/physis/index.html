@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/assets/styles.css" />
     <script defer src="/assets/site.js"></script>
   </head>
-  <body>
+  <body class="theme-physis">
     <div class="page-shell">
       <header class="topbar">
         <div class="topbar-inner">
@@ -24,57 +24,176 @@
           </a>
           <nav class="nav">
             <a href="/">Home</a>
-            <a href="/portfolio/">Portfolio</a>
-            <a href="https://physis.duckermind.com">Project domain</a>
+            <a href="/portfolio/">Programs</a>
+            <a href="/approach/">Operating Model</a>
+            <a href="https://github.com/ZHOU-henry/physis">GitHub</a>
           </nav>
         </div>
       </header>
+
       <main class="content">
-        <section class="project-layout" data-reveal>
-          <article>
-            <span class="eyebrow">Physis</span>
-            <h1 class="project-title">A simulator-first framework for practical physical AI.</h1>
-            <p class="project-lede">
-              Physis is the engineering lane for physical AI systems: a clean
-              module boundary between simulation, perception, control, data, and
-              ROS integration.
-            </p>
-          </article>
-          <aside>
-            <span class="status-pill">Stage 0 architecture scaffold</span>
-            <p class="domain-chip">Primary domain: physis.duckermind.com</p>
-          </aside>
+        <section class="hero">
+          <div class="panel-dark project-hero-shell" data-reveal>
+            <article>
+              <span class="eyebrow">Physis</span>
+              <h1 class="project-title">A simulator-first framework for practical physical AI.</h1>
+              <p class="project-lede">
+                Physis is Duckermind's engineering lane for physical AI. It does
+                not pretend to be a finished robotics stack already. Its job is
+                to define the right technical boundaries early: simulation,
+                perception, control, datasets, and ROS integration.
+              </p>
+              <div class="project-links">
+                <a class="button" href="https://github.com/ZHOU-henry/physis">Open GitHub</a>
+                <a class="button-secondary" href="/portfolio/">Back To Programs</a>
+              </div>
+            </article>
+
+            <aside class="project-side">
+              <div class="project-signal-card">
+                <span class="status-pill">Stage</span>
+                <strong>Stage 0 architecture scaffold</strong>
+                <p class="card-copy">The current value is architectural discipline, not inflated delivery claims.</p>
+              </div>
+              <div class="project-signal-card">
+                <span class="domain-chip">Primary domain</span>
+                <strong>physis.duckermind.com</strong>
+                <p class="card-copy">Currently routes into the dossier and remains easy to promote later.</p>
+              </div>
+              <div class="project-signal-card">
+                <span class="signal-label">Core object</span>
+                <strong>Simulation before deployment theater</strong>
+                <p class="card-copy">The framework optimizes for clean technical footing before flashy demos.</p>
+              </div>
+            </aside>
+          </div>
         </section>
 
         <section class="section">
-          <div class="detail-grid">
-            <article class="stack-card" data-reveal>
-              <span class="panel-label">Focus</span>
-              <h3>Simulation before deployment theater</h3>
-              <p>
-                The framework starts from reproducibility and clean architecture,
-                not vague demo claims.
+          <div class="section-shell panel-shell">
+            <div class="section-head" data-reveal>
+              <div>
+                <span class="section-kicker">Why Physis Exists</span>
+                <h2>Physical AI needs a better spine than isolated robotics demos.</h2>
+              </div>
+              <p class="section-note">
+                Many robotics efforts collapse because they mix embodiment
+                ambition with unclear software boundaries. Physis is designed to
+                lock down the engineering layers before scaling claims.
               </p>
-            </article>
-            <article class="stack-card" data-reveal>
-              <span class="panel-label">Structure</span>
-              <h3>Perception, control, datasets, and ROS</h3>
-              <p>
-                The repository already expresses the right system boundaries for
-                evolving into real robotics work.
-              </p>
-            </article>
-            <article class="stack-card" data-reveal>
-              <span class="panel-label">Role in portfolio</span>
-              <h3>The technical infrastructure lane for Physical AI</h3>
-              <p>
-                Physis holds the practical systems base that complements Titan's
-                longer-horizon research architecture.
-              </p>
-            </article>
+            </div>
+
+            <div class="story-grid">
+              <article class="story-card" data-reveal>
+                <span class="panel-label">Simulation</span>
+                <h3 class="card-title">Reproducibility first</h3>
+                <p>Simulation gives the project a stable environment for policy, perception, and evaluation loops.</p>
+              </article>
+              <article class="story-card" data-reveal>
+                <span class="panel-label">Control</span>
+                <h3 class="card-title">Operational boundaries stay clean</h3>
+                <p>Control is treated as its own module rather than getting buried inside demo code.</p>
+              </article>
+              <article class="story-card" data-reveal>
+                <span class="panel-label">Data + ROS</span>
+                <h3 class="card-title">Integration is planned from the beginning</h3>
+                <p>Datasets and ROS connectivity are part of the architecture, not a late retrofit.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-band" data-reveal>
+            <div class="section-band-grid">
+              <div class="callout-stack">
+                <span class="section-kicker">Framework Role</span>
+                <h2 class="page-title">Physis is the practical infrastructure lane for the portfolio's embodied ambitions.</h2>
+                <p class="callout-copy">
+                  Where Titan explores the longer-horizon architecture of
+                  embodied intelligence, Physis holds the nearer engineering
+                  substrate. One asks the bigger research question. The other
+                  builds the simulator-first groundwork.
+                </p>
+              </div>
+              <div class="callout-grid">
+                <article class="callout-card">
+                  <span class="panel-label">Perception</span>
+                  <strong>Sensor and scene understanding boundary</strong>
+                </article>
+                <article class="callout-card">
+                  <span class="panel-label">Control</span>
+                  <strong>Decision execution and actuation lane</strong>
+                </article>
+                <article class="callout-card">
+                  <span class="panel-label">Datasets</span>
+                  <strong>Training and evaluation substrate</strong>
+                </article>
+                <article class="callout-card">
+                  <span class="panel-label">ROS</span>
+                  <strong>Bridge to practical robotics integration</strong>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-shell panel-shell">
+            <div class="section-head" data-reveal>
+              <div>
+                <span class="section-kicker">Next Engineering Moves</span>
+                <h2>What Physis should make sharper first.</h2>
+              </div>
+            </div>
+
+            <div class="roadmap-grid">
+              <article class="phase-card" data-reveal>
+                <span class="panel-label">Now</span>
+                <h3 class="card-title">Deepen the simulator architecture</h3>
+                <p>Codify evaluation environments, interfaces, and baseline loops before scale ambitions grow.</p>
+              </article>
+              <article class="phase-card" data-reveal>
+                <span class="panel-label">Next</span>
+                <h3 class="card-title">Improve perception-control handoff</h3>
+                <p>Make module boundaries explicit enough that future contributors can extend the system cleanly.</p>
+              </article>
+              <article class="phase-card" data-reveal>
+                <span class="panel-label">Later</span>
+                <h3 class="card-title">Connect to higher-fidelity robotics workflows</h3>
+                <p>ROS and dataset lanes become the bridge from architecture into practical lab work.</p>
+              </article>
+              <article class="phase-card" data-reveal>
+                <span class="panel-label">Portfolio role</span>
+                <h3 class="card-title">Supply the technical spine for physical AI</h3>
+                <p>Physis makes embodiment work more executable across the rest of the company.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="panel-dark project-quote" data-reveal>
+            <span class="section-kicker">Physis in one line</span>
+            <p class="quote-copy">
+              Before a physical AI system can be impressive, it has to be
+              technically clean enough to survive contact with reality.
+            </p>
           </div>
         </section>
       </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <p class="footer-note">Physis is Duckermind's simulator-first physical AI framework.</p>
+          <nav class="footer-links">
+            <a class="link-pill" href="/portfolio/">Programs</a>
+            <a class="link-pill" href="/approach/">Operating Model</a>
+            <a class="link-pill" href="https://github.com/ZHOU-henry/physis">GitHub</a>
+            <a class="link-pill" href="/projects/titan/">Titan dossier</a>
+          </nav>
+        </div>
+      </footer>
     </div>
   </body>
 </html>

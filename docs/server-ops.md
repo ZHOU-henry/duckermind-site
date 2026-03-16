@@ -57,8 +57,9 @@ Keep them proxied by Cloudflare.
 
 ## First-Phase Routing
 
-Use the root site as the public atlas. Redirect each subdomain into the
-matching detail page until that project gets its own standalone deployment.
+Use the root site as the public atlas. Keep `agora.duckermind.com` as its own
+standalone static product page. Redirect the remaining project hosts into the
+matching detail page until each one needs a dedicated deployment.
 
 ### Caddy pattern
 
@@ -70,7 +71,9 @@ duckermind.com, www.duckermind.com {
 }
 
 agora.duckermind.com {
-    redir https://duckermind.com/projects/agora/ 308
+    root * /var/www/agora.duckermind.com
+    file_server
+    encode zstd gzip
 }
 ```
 

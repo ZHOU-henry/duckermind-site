@@ -1,44 +1,49 @@
 # Duckermind Site
 
-Static portfolio and program site for `duckermind.com`.
+Static company and program site system for `duckermind.com` and
+`agora.duckermind.com`.
 
 ## What This Contains
 
 - `site/`
   - root homepage for `duckermind.com`
-  - portfolio overview pages
-  - detail pages for:
-    - Agora
-    - Noesis
-    - Peras
-    - Physis
-    - Titan
+  - portfolio architecture page
+  - operating-model page
+  - detail pages for Agora, Noesis, Peras, Physis, and Titan
+- `site-agora/`
+  - standalone premium static surface for `agora.duckermind.com`
+- `docs/design-reference-atlas.md`
+  - design research notes distilled from 20+ official AI / tech / lab websites
 - `infra/caddy/Caddyfile.example`
   - root-site serving
-  - first-phase subdomain redirects
-  - commented examples for later swapping subdomains to dedicated apps
+  - standalone Agora static-site serving
+  - first-phase redirects for the other project hosts
+  - commented examples for later swapping any host to a dedicated app
 
 ## First-Phase Domain Architecture
 
-- `duckermind.com` -> main portfolio site
-- `www.duckermind.com` -> main portfolio site
-- `agora.duckermind.com` -> redirects to `https://duckermind.com/projects/agora/`
+- `duckermind.com` -> main company and portfolio site
+- `www.duckermind.com` -> main company and portfolio site
+- `agora.duckermind.com` -> standalone Agora static product surface
 - `noesis.duckermind.com` -> redirects to `https://duckermind.com/projects/noesis/`
 - `peras.duckermind.com` -> redirects to `https://duckermind.com/projects/peras/`
 - `physis.duckermind.com` -> redirects to `https://duckermind.com/projects/physis/`
 - `titan.duckermind.com` -> redirects to `https://duckermind.com/projects/titan/`
 
-This gives each MVP a stable project domain immediately while keeping deployment
-simple on one server. Later, each subdomain can be changed from `redir` to
-`reverse_proxy` or a new static root without changing the public brand map.
+This gives the parent company and the lead product their own public surfaces
+immediately while keeping the rest of the portfolio on a low-friction routing
+ladder. Later, any subdomain can move from `redir` to `reverse_proxy` or its
+own static root without changing the public brand map.
 
 ## Suggested Deployment On The Server
 
-Copy `site/` to:
+Copy `site/` and `site-agora/` to:
 
 ```bash
 sudo mkdir -p /var/www/duckermind.com
+sudo mkdir -p /var/www/agora.duckermind.com
 sudo rsync -av --delete /path/to/duckermind-site/site/ /var/www/duckermind.com/
+sudo rsync -av --delete /path/to/duckermind-site/site-agora/ /var/www/agora.duckermind.com/
 ```
 
 Then adapt `infra/caddy/Caddyfile.example` into `/etc/caddy/Caddyfile` and
@@ -47,4 +52,10 @@ reload:
 ```bash
 sudo caddy fmt --overwrite /etc/caddy/Caddyfile
 sudo systemctl reload caddy
+```
+
+For remote sync from a local machine, use:
+
+```bash
+./scripts/deploy-duckermind-sites.sh admin@your-server
 ```
