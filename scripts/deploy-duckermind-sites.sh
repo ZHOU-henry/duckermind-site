@@ -10,12 +10,20 @@ TARGET="$1"
 REMOTE_BASE="${2:-/var/www}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SSH_KEY="${DUCKERMIND_SSH_KEY:-}"
+SSH_OPTIONS=(-o StrictHostKeyChecking=accept-new)
 
 ROOT_SITE_DIR="$PROJECT_ROOT/site"
 AGORA_SITE_DIR="$PROJECT_ROOT/site-agora"
 
-rsync -av --delete "$ROOT_SITE_DIR"/ "$TARGET:$REMOTE_BASE/duckermind.com"/
-rsync -av --delete "$AGORA_SITE_DIR"/ "$TARGET:$REMOTE_BASE/agora.duckermind.com"/
+if [[ -n "$SSH_KEY" ]]; then
+  SSH_OPTIONS=(-i "$SSH_KEY" "${SSH_OPTIONS[@]}")
+fi
+
+RSYNC_RSH=("ssh" "${SSH_OPTIONS[@]}")
+
+rsync -av --delete -e "${RSYNC_RSH[*]}" "$ROOT_SITE_DIR"/ "$TARGET:$REMOTE_BASE/duckermind.com"/
+rsync -av --delete -e "${RSYNC_RSH[*]}" "$AGORA_SITE_DIR"/ "$TARGET:$REMOTE_BASE/agora.duckermind.com"/
 
 echo "Synced:"
 echo "  $ROOT_SITE_DIR -> $TARGET:$REMOTE_BASE/duckermind.com"

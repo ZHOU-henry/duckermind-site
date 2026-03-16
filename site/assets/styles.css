@@ -28,8 +28,6 @@
   --radius-md: 22px;
   --radius-sm: 16px;
   --max-width: 1340px;
-  --cursor-x: 50vw;
-  --cursor-y: 12rem;
 }
 
 body.theme-agora {
@@ -79,9 +77,9 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 14%, rgba(var(--accent-rgb), 0.16), transparent 30%),
-    radial-gradient(circle at 88% 8%, rgba(255, 141, 93, 0.12), transparent 24%),
-    radial-gradient(circle at 54% 120%, rgba(117, 243, 206, 0.18), transparent 28%),
+    radial-gradient(circle at 8% 14%, rgba(var(--accent-rgb), 0.12), transparent 24%),
+    radial-gradient(circle at 88% 8%, rgba(255, 141, 93, 0.08), transparent 20%),
+    radial-gradient(circle at 54% 120%, rgba(117, 243, 206, 0.1), transparent 24%),
     linear-gradient(180deg, #fbf8f3 0%, #f4f0e8 44%, #ece7df 100%);
   color: var(--ink);
   font-family: "Manrope", sans-serif;
@@ -101,16 +99,14 @@ body::before {
     linear-gradient(rgba(16, 23, 34, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(16, 23, 34, 0.06) 1px, transparent 1px);
   background-size: 76px 76px;
-  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.82) 34%, transparent 82%);
-  opacity: 0.55;
+  opacity: 0.14;
 }
 
 body::after {
   background:
-    radial-gradient(circle at var(--cursor-x) var(--cursor-y), rgba(var(--accent-rgb), 0.18), transparent 0 22rem),
-    radial-gradient(circle at calc(var(--cursor-x) + 16rem) calc(var(--cursor-y) - 8rem), rgba(117, 243, 206, 0.12), transparent 0 18rem);
-  transition: background-position 180ms ease;
-  opacity: 0.9;
+    radial-gradient(circle at 18% 18%, rgba(var(--accent-rgb), 0.08), transparent 18rem),
+    radial-gradient(circle at 82% 24%, rgba(117, 243, 206, 0.06), transparent 16rem);
+  opacity: 0.7;
 }
 
 a {
@@ -146,7 +142,6 @@ img {
   z-index: 30;
   border-bottom: 1px solid rgba(255, 255, 255, 0.34);
   background: rgba(249, 245, 239, 0.72);
-  backdrop-filter: blur(26px);
 }
 
 .topbar-inner,
@@ -314,7 +309,6 @@ img {
     linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.52)),
     rgba(255, 255, 255, 0.52);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(20px);
 }
 
 .panel-dark,
@@ -577,9 +571,8 @@ img {
 
 .signal-stage::after {
   background:
-    radial-gradient(circle at 26% 24%, rgba(var(--accent-rgb), 0.5), transparent 10rem),
-    radial-gradient(circle at 76% 30%, rgba(255, 141, 93, 0.25), transparent 11rem);
-  filter: blur(16px);
+    radial-gradient(circle at 26% 24%, rgba(var(--accent-rgb), 0.22), transparent 10rem),
+    radial-gradient(circle at 76% 30%, rgba(255, 141, 93, 0.12), transparent 11rem);
 }
 
 .signal-ring {
@@ -626,7 +619,6 @@ img {
   color: var(--ink-on-dark);
   font-family: "Azeret Mono", monospace;
   font-size: 0.82rem;
-  backdrop-filter: blur(12px);
 }
 
 .signal-node strong {
@@ -1052,7 +1044,6 @@ img {
     scroll-behavior: auto;
   }
 
-  body::after,
   [data-reveal] {
     transition: none;
   }

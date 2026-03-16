@@ -57,5 +57,6 @@ sudo systemctl reload caddy
 For remote sync from a local machine, use:
 
 ```bash
-./scripts/deploy-duckermind-sites.sh admin@your-server
+DUCKERMIND_SSH_KEY=/path/to/Duckermind-main.pem \
+  ./scripts/deploy-duckermind-sites.sh admin@your-server
 ```

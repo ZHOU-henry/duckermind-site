@@ -38,6 +38,19 @@ sudo systemctl restart ssh
 Keep one active `admin` session open while testing a second login window, so
 you do not lock yourself out.
 
+## Local deploy key
+
+This workspace can use:
+
+- `/home/henry/下载/Duckermind-main.pem`
+
+Example sync command:
+
+```bash
+DUCKERMIND_SSH_KEY=/home/henry/下载/Duckermind-main.pem \
+  ./scripts/deploy-duckermind-sites.sh admin@43.99.83.184
+```
+
 ## DNS Records
 
 Root records:
