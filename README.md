@@ -9,11 +9,13 @@ Static company and program site system for `duckermind.com` and
   - root homepage for `duckermind.com`
   - portfolio architecture page
   - operating-model page
-  - detail pages for Agora, Noesis, Peras, Physis, and Titan
+  - detail pages for Agora, Noesis, Peras, Physis, Titan, and Autogenesis
 - `site-agora/`
   - standalone premium static surface for `agora.duckermind.com`
 - `docs/design-reference-atlas.md`
   - design research notes distilled from 20+ official AI / tech / lab websites
+- `docs/third-party-assets.md`
+  - provenance notes for imported homepage imagery
 - `infra/caddy/Caddyfile.example`
   - root-site serving
   - standalone Agora static-site serving
@@ -29,6 +31,7 @@ Static company and program site system for `duckermind.com` and
 - `peras.duckermind.com` -> redirects to `https://duckermind.com/projects/peras/`
 - `physis.duckermind.com` -> redirects to `https://duckermind.com/projects/physis/`
 - `titan.duckermind.com` -> redirects to `https://duckermind.com/projects/titan/`
+- planned next host: `autogenesis.duckermind.com` -> `https://duckermind.com/projects/autogenesis/`
 
 This gives the parent company and the lead product their own public surfaces
 immediately while keeping the rest of the portfolio on a low-friction routing

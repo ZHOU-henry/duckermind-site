@@ -66,13 +66,18 @@ Project subdomains to add in Cloudflare:
 - `A  physis              -> 43.99.83.184`
 - `A  titan               -> 43.99.83.184`
 
+Planned next project host:
+
+- `A  autogenesis         -> 43.99.83.184`
+
 Keep them proxied by Cloudflare.
 
 ## First-Phase Routing
 
 Use the root site as the public atlas. Keep `agora.duckermind.com` as its own
 standalone static product page. Redirect the remaining project hosts into the
-matching detail page until each one needs a dedicated deployment.
+matching detail page until each one needs a dedicated deployment. A future
+`autogenesis.duckermind.com` host can follow the same pattern.
 
 ### Caddy pattern
 

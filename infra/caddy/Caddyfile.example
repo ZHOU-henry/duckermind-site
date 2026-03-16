@@ -30,6 +30,12 @@ titan.duckermind.com {
 	redir https://duckermind.com/projects/titan/ 308
 }
 
+# Planned next project host:
+#
+# autogenesis.duckermind.com {
+# 	redir https://duckermind.com/projects/autogenesis/ 308
+# }
+
 # Later upgrade path examples:
 #
 # agora.duckermind.com {
