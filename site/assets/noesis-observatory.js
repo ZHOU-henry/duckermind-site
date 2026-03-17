@@ -144,7 +144,7 @@
         .width(globeNode.clientWidth || 720)
         .height(560)
         .backgroundColor("rgba(0,0,0,0)")
-        .globeImageUrl("https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg")
+        .globeImageUrl("/assets/images/earth-night.jpg")
         .showAtmosphere(true)
         .atmosphereColor("#66c6ff")
         .atmosphereAltitude(0.15)
