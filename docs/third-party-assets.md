@@ -9,9 +9,17 @@ clear reuse permission.
 - Globe.GL:
   - <https://globe.gl/>
   - locally hosted under `site/assets/vendor/globe.gl.min.js`
+- TopoJSON client:
+  - <https://github.com/topojson/topojson-client>
+  - locally hosted under `site/assets/vendor/topojson-client.min.js`
 - Earth texture:
   - derived from official `three-globe` example image
   - locally hosted under `site/assets/images/earth-night.jpg`
+  - pacific-centered derivative:
+    - `site/assets/images/earth-night-pacific.jpg`
+- Country boundary data:
+  - `world-atlas` countries topojson
+  - locally hosted under `site/assets/data/countries-110m.json`
 
 ## Imported Images
 

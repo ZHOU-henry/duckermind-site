@@ -133,6 +133,7 @@
 
   let currentFactor = "compute";
   let currentYear = "2026";
+  let countryFeatures = [];
 
   function sphericalToCartesian(lat, lng) {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -188,6 +189,15 @@
       draw();
     }
 
+    function projectPoint(latValue, lngValue, cx, cy, radius) {
+      const p = rotatePoint(sphericalToCartesian(latValue, lngValue), lon, lat);
+      return {
+        x: cx + radius * p.x,
+        y: cy - radius * p.y,
+        z: p.z
+      };
+    }
+
     function drawGraticule(cx, cy, radius) {
       ctx.strokeStyle = "rgba(255,255,255,0.12)";
       ctx.lineWidth = 1;
@@ -233,6 +243,55 @@
       }
     }
 
+    function drawCountries(cx, cy, radius) {
+      if (!countryFeatures.length) return;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.clip();
+
+      ctx.fillStyle = "rgba(130, 223, 255, 0.08)";
+      ctx.strokeStyle = "rgba(190, 226, 255, 0.2)";
+      ctx.lineWidth = 0.8;
+
+      for (const feature of countryFeatures) {
+        const polygons =
+          feature.geometry.type === "Polygon"
+            ? [feature.geometry.coordinates]
+            : feature.geometry.coordinates;
+
+        for (const polygon of polygons) {
+          for (const ring of polygon) {
+            let visibleCount = 0;
+            ctx.beginPath();
+            let started = false;
+            for (const [lngValue, latValue] of ring) {
+              const point = projectPoint(latValue, lngValue, cx, cy, radius);
+              if (point.z < -0.02) {
+                started = false;
+                continue;
+              }
+              visibleCount += 1;
+              if (!started) {
+                ctx.moveTo(point.x, point.y);
+                started = true;
+              } else {
+                ctx.lineTo(point.x, point.y);
+              }
+            }
+            if (visibleCount > 2) {
+              ctx.closePath();
+              ctx.fill();
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      ctx.restore();
+    }
+
     function draw() {
       const rect = globeNode.getBoundingClientRect();
       const width = rect.width;
@@ -252,6 +311,7 @@
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
 
+      drawCountries(cx, cy, radius);
       drawGraticule(cx, cy, radius);
 
       const items = observatoryData[currentYear][currentFactor];
@@ -308,6 +368,20 @@
     });
 
     window.addEventListener("resize", resize);
+    async function loadCountryData() {
+      try {
+        const response = await fetch("/assets/data/countries-110m.json");
+        const topology = await response.json();
+        if (window.topojson && topology.objects && topology.objects.countries) {
+          countryFeatures = window.topojson.feature(topology, topology.objects.countries).features;
+          draw();
+        }
+      } catch (error) {
+        // Leave the globe usable even if boundary data fails.
+      }
+    }
+
+    loadCountryData();
     resize();
     return {
       update: draw
@@ -326,53 +400,13 @@
   let globe = null;
   let fallback = null;
 
-  try {
-    if (window.Globe) {
-      globe = window.Globe()(globeNode)
-        .width(globeNode.clientWidth || 720)
-        .height(560)
-        .backgroundColor("rgba(0,0,0,0)")
-        .globeImageUrl("/assets/images/earth-night.jpg")
-        .showAtmosphere(true)
-        .atmosphereColor("#66c6ff")
-        .atmosphereAltitude(0.15)
-        .pointLat("lat")
-        .pointLng("lng")
-        .pointAltitude("altitude")
-        .pointRadius("radius")
-        .pointColor("color")
-        .labelLat("lat")
-        .labelLng("lng")
-        .labelText((d) => d.name)
-        .labelSize(1.2)
-        .labelColor(() => "rgba(255,255,255,0.85)")
-        .labelDotRadius(0.2)
-        .labelAltitude(0.01);
-    }
-  } catch (error) {
-    globe = null;
-  }
-
-  if (!globe) {
-    fallback = initFallbackGlobe();
-  }
+  fallback = initFallbackGlobe();
 
   function applyData() {
     const factorMeta = factors[currentFactor];
     const items = observatoryData[currentYear][currentFactor];
     const sorted = [...items].sort((a, b) => b.value - a.value);
 
-    if (globe) {
-      const pointData = buildPointData(items, factorMeta.color);
-      globe.pointsData(pointData);
-      globe.labelsData(pointData);
-      const controls = globe.controls();
-      controls.autoRotate = false;
-      controls.enablePan = false;
-      controls.minDistance = 120;
-      controls.maxDistance = 360;
-      globe.pointOfView({ lat: 22, lng: 12, altitude: 2.0 }, 600);
-    }
     if (fallback) {
       fallback.update();
     }
