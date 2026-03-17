@@ -1214,6 +1214,19 @@ img {
   font-size: 0.98rem;
 }
 
+.formula-line {
+  display: block;
+  margin-top: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  background: rgba(16, 23, 34, 0.04);
+  color: var(--ink);
+  font-family: "Azeret Mono", monospace;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
 .mock-flow,
 .mock-form,
 .mock-queue {
