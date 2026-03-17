@@ -56,11 +56,15 @@
       compute: [
         { name: "US East", lat: 38.9, lng: -77.0, value: 84, note: "Northern Virginia and East Coast cluster" },
         { name: "US West", lat: 37.4, lng: -122.0, value: 79, note: "Bay Area and West Coast cluster" },
+        { name: "Pacific Northwest", lat: 47.6, lng: -122.3, value: 72, note: "Seattle and cloud-region expansion belt" },
         { name: "Europe Core", lat: 50.1, lng: 8.6, value: 63, note: "Frankfurt, Amsterdam, Paris, London corridor" },
         { name: "China East", lat: 31.2, lng: 121.4, value: 78, note: "Shanghai-centered industrial and cloud density" },
         { name: "China North", lat: 39.9, lng: 116.4, value: 74, note: "Beijing policy, model, and state-backed cluster" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 59, note: "Tokyo compute and enterprise AI base" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 56, note: "Seoul semiconductor and cloud demand cluster" },
         { name: "India", lat: 19.0, lng: 72.8, value: 49, note: "Mumbai + Bengaluru buildout phase" },
         { name: "Singapore / Johor", lat: 1.35, lng: 103.8, value: 57, note: "Regional infra and logistics role" },
+        { name: "Pacific Node", lat: 21.3, lng: -157.8, value: 43, note: "Submarine-cable and Pacific logistics proxy" },
         { name: "Gulf", lat: 24.5, lng: 54.4, value: 41, note: "Early energy-backed compute push" }
       ],
       algorithms: [
@@ -69,6 +73,8 @@
         { name: "China", lat: 39.9, lng: 116.4, value: 74, note: "Model systems and applied algorithm scale" },
         { name: "UK", lat: 51.5, lng: -0.1, value: 58, note: "DeepMind and London research concentration" },
         { name: "France", lat: 48.8, lng: 2.3, value: 54, note: "Paris / Mistral / Inria / math-ML cluster" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 51, note: "Enterprise and robotics-adjacent algorithm strength" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 48, note: "Vision and semiconductor-adjacent algorithm talent" },
         { name: "India", lat: 12.9, lng: 77.6, value: 44, note: "Fast-growing talent and product lab presence" },
         { name: "Singapore", lat: 1.29, lng: 103.85, value: 46, note: "Regional research and deployment node" }
       ],
@@ -76,6 +82,8 @@
         { name: "US", lat: 39.0, lng: -98.0, value: 86, note: "Platform concentration and open-data ecosystem scale" },
         { name: "Europe", lat: 50.1, lng: 8.6, value: 60, note: "High institutional density, tighter governance" },
         { name: "China", lat: 31.2, lng: 121.4, value: 75, note: "Large-scale domestic data ecosystem" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 47, note: "Industrial and enterprise data-rich environment" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 44, note: "Consumer-tech and device ecosystem data strength" },
         { name: "India", lat: 20.5, lng: 78.9, value: 51, note: "Population-scale digital exhaust and services data" },
         { name: "SEA", lat: 1.35, lng: 103.8, value: 45, note: "Regional logistics and consumer-scale data growth" }
       ],
@@ -84,13 +92,18 @@
         { name: "US West", lat: 37.4, lng: -122.0, value: 76, note: "Cloud backbone and research-adjacent storage" },
         { name: "Europe Core", lat: 52.3, lng: 4.9, value: 61, note: "Amsterdam / Frankfurt corridor" },
         { name: "China", lat: 31.2, lng: 121.4, value: 72, note: "Large domestic cloud storage footprint" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 54, note: "Enterprise cloud and storage-heavy industrial demand" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 49, note: "High-density storage and device ecosystem support" },
         { name: "Singapore", lat: 1.29, lng: 103.85, value: 50, note: "Regional data warehousing node" }
       ],
       energy: [
         { name: "US", lat: 39.0, lng: -98.0, value: 73, note: "Mixed grid, rising AI power demand" },
+        { name: "US West", lat: 37.4, lng: -122.0, value: 68, note: "Power-constrained but capital-rich West Coast corridor" },
         { name: "Nordics", lat: 59.3, lng: 18.1, value: 79, note: "Clean power and cool-climate infra advantage" },
         { name: "Canada", lat: 45.4, lng: -73.6, value: 68, note: "Hydro and cooling advantage" },
         { name: "China", lat: 35.8, lng: 104.1, value: 76, note: "Scale advantage with mixed energy constraints" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 46, note: "Import-dependent energy context with high demand" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 44, note: "Dense industrial load and constrained energy profile" },
         { name: "Gulf", lat: 24.5, lng: 54.4, value: 71, note: "Energy-backed compute ambition" }
       ],
       talent: [
@@ -98,6 +111,8 @@
         { name: "US East", lat: 42.3, lng: -71.0, value: 67, note: "Boston / NYC research and startup layer" },
         { name: "UK", lat: 51.5, lng: -0.1, value: 63, note: "DeepMind and allied ecosystem" },
         { name: "France", lat: 48.8, lng: 2.3, value: 61, note: "Mistral / Inria / academic cluster" },
+        { name: "Japan", lat: 35.7, lng: 139.7, value: 57, note: "Robotics, enterprise, and advanced engineering talent" },
+        { name: "Korea", lat: 37.56, lng: 126.98, value: 53, note: "Semiconductor and applied AI talent density" },
         { name: "India", lat: 12.9, lng: 77.6, value: 72, note: "Large-scale engineering and AI labor pool" },
         { name: "Singapore", lat: 1.29, lng: 103.85, value: 58, note: "Dense regional high-skill node" },
         { name: "Israel", lat: 32.08, lng: 34.78, value: 55, note: "High-intensity entrepreneurial AI cluster" }
@@ -111,12 +126,12 @@
   observatoryData["2026"] = JSON.parse(JSON.stringify(observatoryData["2024"]));
 
   const bump = {
-    compute: [2, 2, 3, 3, 2, 2, 3, 6],
-    algorithms: [2, 1, 2, 2, 2, 2, 3],
-    data: [1, 1, 2, 2, 2],
-    storage: [2, 1, 2, 2, 3],
-    energy: [1, 2, 1, 2, 4],
-    talent: [1, 1, 1, 2, 3, 2, 1]
+    compute: [2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 4, 6],
+    algorithms: [2, 1, 2, 2, 2, 2, 2, 2, 3],
+    data: [1, 1, 2, 1, 1, 2, 2],
+    storage: [2, 1, 2, 2, 1, 1, 3],
+    energy: [1, 1, 2, 1, 2, 1, 1, 4],
+    talent: [1, 1, 1, 2, 1, 1, 3, 2, 1]
   };
 
   Object.keys(observatoryData["2025"]).forEach((factor) => {
@@ -251,9 +266,9 @@
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.clip();
 
-      ctx.fillStyle = "rgba(130, 223, 255, 0.08)";
-      ctx.strokeStyle = "rgba(190, 226, 255, 0.2)";
-      ctx.lineWidth = 0.8;
+      ctx.fillStyle = "rgba(110, 178, 120, 0.28)";
+      ctx.strokeStyle = "rgba(205, 233, 255, 0.34)";
+      ctx.lineWidth = 1;
 
       for (const feature of countryFeatures) {
         const polygons =

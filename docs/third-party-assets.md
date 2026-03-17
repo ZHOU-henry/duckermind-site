@@ -17,6 +17,8 @@ clear reuse permission.
   - locally hosted under `site/assets/images/earth-night.jpg`
   - pacific-centered derivative:
     - `site/assets/images/earth-night-pacific.jpg`
+  - pacific-centered hero crop:
+    - `site/assets/images/earth-night-pacific-hero.jpg`
 - Country boundary data:
   - `world-atlas` countries topojson
   - locally hosted under `site/assets/data/countries-110m.json`
