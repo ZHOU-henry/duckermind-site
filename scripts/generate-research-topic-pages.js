@@ -26,12 +26,6 @@ const titleByProject = {
   autogenesis: "Autogenesis"
 };
 
-const imageByProject = {
-  noesis: "/assets/images/circuit-board.jpg",
-  peras: "/assets/images/matrix-art.jpg",
-  autogenesis: "/assets/images/future-city.jpg"
-};
-
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -42,7 +36,6 @@ function escapeHtml(value) {
 
 function renderTopicPage(project, slug, topic) {
   const projectTitle = titleByProject[project];
-  const image = imageByProject[project];
   const cards = topic.cards
     .map(
       (card) => `
@@ -102,32 +95,32 @@ function renderTopicPage(project, slug, topic) {
         </div>
       </header>
       <main class="content">
-        <section class="hero hero-home">
-          <article class="panel hero-copy-block" data-reveal>
-            <div class="quick-intro">
-              <span class="eyebrow">${escapeHtml(topic.eyebrow)}</span>
-              <h1 class="hero-title">${escapeHtml(topic.title)}</h1>
-              <p class="hero-lede">${escapeHtml(topic.lede)}</p>
-            </div>
-            <div class="button-row">
-              <a class="button" href="/projects/${project}/">Back to ${escapeHtml(projectTitle)}</a>
-              <a class="button-secondary" href="/projects/${project}/research-agenda/">Research Agenda</a>
-            </div>
-          </article>
-          <aside class="hero-visual visual-card" data-reveal>
-            <div class="hero-visual-shell">
-              <div class="visual-card-image">
-                <img src="${image}" alt="${escapeHtml(projectTitle)} topic image" loading="eager" />
-              </div>
-              <div class="hero-visual-copy">
-                <span class="panel-label">Sources</span>
-                <div class="tag-row">${sources}</div>
-              </div>
-            </div>
-          </aside>
-        </section>
         <section class="section">
-          <div class="story-grid">${cards}</div>
+          <div class="topic-doc-grid">
+            <article class="topic-doc-main" data-reveal>
+              <div class="topic-doc-header">
+                <span class="eyebrow">${escapeHtml(topic.eyebrow)}</span>
+                <h1>${escapeHtml(topic.title)}</h1>
+                <p class="section-note">${escapeHtml(topic.lede)}</p>
+              </div>
+              <div class="topic-doc-actions">
+                <a class="button" href="/projects/${project}/">Back to ${escapeHtml(projectTitle)}</a>
+                <a class="button-secondary" href="/projects/${project}/research-agenda/">Research Agenda</a>
+              </div>
+              <div class="topic-doc-section">
+                <div class="story-grid">${cards}</div>
+              </div>
+            </article>
+            <aside class="topic-doc-side" data-reveal>
+              <span class="section-kicker">Source Anchors</span>
+              <h2 class="card-title">Primary references</h2>
+              <div class="tag-row">${sources}</div>
+              <div class="topic-doc-section">
+                <span class="section-kicker">Reading Mode</span>
+                <p class="section-note">These pages are intentionally denser and more document-like than the main Duckermind landing pages.</p>
+              </div>
+            </aside>
+          </div>
         </section>
         ${formulaSection}
         <section class="section" id="contact">

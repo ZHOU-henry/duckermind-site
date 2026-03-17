@@ -130,6 +130,182 @@
   let currentFactor = "compute";
   let currentYear = "2026";
 
+  function sphericalToCartesian(lat, lng) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return {
+      x: Math.sin(phi) * Math.cos(theta),
+      y: Math.cos(phi),
+      z: Math.sin(phi) * Math.sin(theta)
+    };
+  }
+
+  function rotatePoint(point, lon, lat) {
+    const lonRad = lon * (Math.PI / 180);
+    const latRad = lat * (Math.PI / 180);
+
+    const x1 = point.x * Math.cos(lonRad) - point.z * Math.sin(lonRad);
+    const z1 = point.x * Math.sin(lonRad) + point.z * Math.cos(lonRad);
+    const y1 = point.y;
+
+    return {
+      x: x1,
+      y: y1 * Math.cos(latRad) - z1 * Math.sin(latRad),
+      z: y1 * Math.sin(latRad) + z1 * Math.cos(latRad)
+    };
+  }
+
+  function initFallbackGlobe() {
+    const canvas = document.createElement("canvas");
+    canvas.className = "globe-canvas";
+    globeNode.innerHTML = "";
+    globeNode.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let lon = -28;
+    let lat = 8;
+    let zoom = 1;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function resize() {
+      const rect = globeNode.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(640, rect.width * ratio);
+      canvas.height = Math.max(420, rect.height * ratio);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      draw();
+    }
+
+    function drawGraticule(cx, cy, radius) {
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.lineWidth = 1;
+      for (let latLine = -60; latLine <= 60; latLine += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let lngLine = -180; lngLine <= 180; lngLine += 4) {
+          const p = rotatePoint(sphericalToCartesian(latLine, lngLine), lon, lat);
+          if (p.z < 0) {
+            started = false;
+            continue;
+          }
+          const x = cx + radius * p.x;
+          const y = cy - radius * p.y;
+          if (!started) {
+            ctx.moveTo(x, y);
+            started = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      }
+      for (let lngLine = -150; lngLine <= 180; lngLine += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let latLine = -90; latLine <= 90; latLine += 4) {
+          const p = rotatePoint(sphericalToCartesian(latLine, lngLine), lon, lat);
+          if (p.z < 0) {
+            started = false;
+            continue;
+          }
+          const x = cx + radius * p.x;
+          const y = cy - radius * p.y;
+          if (!started) {
+            ctx.moveTo(x, y);
+            started = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      }
+    }
+
+    function draw() {
+      const rect = globeNode.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height / 2;
+      const radius = Math.min(width, height) * 0.38 * zoom;
+
+      const sphere = ctx.createRadialGradient(cx - radius * 0.25, cy - radius * 0.3, radius * 0.12, cx, cy, radius);
+      sphere.addColorStop(0, "rgba(67, 159, 255, 0.8)");
+      sphere.addColorStop(0.5, "rgba(18, 44, 84, 0.96)");
+      sphere.addColorStop(1, "rgba(7, 16, 32, 1)");
+      ctx.fillStyle = sphere;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawGraticule(cx, cy, radius);
+
+      const items = observatoryData[currentYear][currentFactor];
+      const factorColor = factors[currentFactor].color;
+      items.forEach((item) => {
+        const p = rotatePoint(sphericalToCartesian(item.lat, item.lng), lon, lat);
+        if (p.z < 0) return;
+        const x = cx + radius * p.x;
+        const y = cy - radius * p.y;
+        const dotRadius = 3 + item.value * 0.06 * zoom;
+        ctx.beginPath();
+        ctx.fillStyle = factorColor;
+        ctx.globalAlpha = 0.22;
+        ctx.arc(x, y, dotRadius * 2.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.fillStyle = factorColor;
+        ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.88)";
+        ctx.font = "12px Manrope";
+        ctx.fillText(item.name, x + dotRadius + 4, y - dotRadius - 2);
+      });
+    }
+
+    canvas.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      const deltaX = event.clientX - lastX;
+      const deltaY = event.clientY - lastY;
+      lon += deltaX * 0.35;
+      lat = Math.max(-70, Math.min(70, lat + deltaY * 0.22));
+      lastX = event.clientX;
+      lastY = event.clientY;
+      draw();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+
+    canvas.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      const delta = event.deltaY > 0 ? -0.08 : 0.08;
+      zoom = Math.max(0.72, Math.min(1.55, zoom + delta));
+      draw();
+    });
+
+    window.addEventListener("resize", resize);
+    resize();
+    return {
+      update: draw
+    };
+  }
+
   function buildPointData(items, color) {
     return items.map((item) => ({
       ...item,
@@ -139,8 +315,12 @@
     }));
   }
 
-  const globe = window.Globe
-    ? window.Globe()(globeNode)
+  let globe = null;
+  let fallback = null;
+
+  try {
+    if (window.Globe) {
+      globe = window.Globe()(globeNode)
         .width(globeNode.clientWidth || 720)
         .height(560)
         .backgroundColor("rgba(0,0,0,0)")
@@ -159,8 +339,15 @@
         .labelSize(1.2)
         .labelColor(() => "rgba(255,255,255,0.85)")
         .labelDotRadius(0.2)
-        .labelAltitude(0.01)
-    : null;
+        .labelAltitude(0.01);
+    }
+  } catch (error) {
+    globe = null;
+  }
+
+  if (!globe) {
+    fallback = initFallbackGlobe();
+  }
 
   function applyData() {
     const factorMeta = factors[currentFactor];
@@ -177,6 +364,9 @@
       controls.minDistance = 120;
       controls.maxDistance = 360;
       globe.pointOfView({ lat: 22, lng: 12, altitude: 2.0 }, 600);
+    }
+    if (fallback) {
+      fallback.update();
     }
 
     summary.textContent = `${factorMeta.label} · ${currentYear} · ${factorMeta.summary}`;
