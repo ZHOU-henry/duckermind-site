@@ -1,4 +1,5 @@
 (function () {
+  function init() {
   const root = document.querySelector("[data-noesis-observatory]");
   if (!root) return;
 
@@ -7,6 +8,9 @@
   const regionList = root.querySelector("[data-region-list]");
   const summary = root.querySelector("[data-observatory-summary]");
   const globeNode = root.querySelector("[data-globe-canvas]");
+  if (!factorButtons || !sliceButtons || !regionList || !summary || !globeNode) {
+    return;
+  }
 
   const factors = {
     compute: {
@@ -171,6 +175,10 @@
 
     function resize() {
       const rect = globeNode.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        requestAnimationFrame(resize);
+        return;
+      }
       const ratio = window.devicePixelRatio || 1;
       canvas.width = Math.max(640, rect.width * ratio);
       canvas.height = Math.max(420, rect.height * ratio);
@@ -409,4 +417,11 @@
   });
 
   applyData();
+  }
+
+  if (document.readyState === "complete") {
+    init();
+  } else {
+    window.addEventListener("load", init, { once: true });
+  }
 })();

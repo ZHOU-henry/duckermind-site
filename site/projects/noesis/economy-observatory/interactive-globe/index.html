@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Noesis Interactive Globe | Duckermind</title>
     <meta name="description" content="Interactive globe for the Noesis six-factor AI economy observatory." />
-    <link rel="stylesheet" href="/assets/styles.css?v=20260317b" />
-    <script defer src="/assets/site.js?v=20260317b"></script>
-    <script defer src="/assets/vendor/globe.gl.min.js"></script>
-    <script defer src="/assets/noesis-observatory.js"></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=20260317c" />
+    <script defer src="/assets/site.js?v=20260317c"></script>
+    <script defer src="/assets/vendor/globe.gl.min.js?v=20260317c"></script>
+    <script defer src="/assets/noesis-observatory.js?v=20260317c"></script>
   </head>
   <body class="theme-noesis">
     <div class="page-shell">
@@ -36,7 +36,7 @@
         <section class="section">
           <article class="visual-card" data-reveal>
             <div class="visual-card-image" style="aspect-ratio: 2.2 / 1;">
-              <img src="/assets/images/earth-night.jpg" alt="Earth texture used for the interactive observatory globe" loading="eager" />
+              <img src="/assets/images/earth-night.jpg" alt="Earth texture used for the interactive observatory globe" loading="eager" style="object-position: 58% 50%;" />
             </div>
           </article>
         </section>
@@ -64,7 +64,7 @@
           </div>
           <p class="prototype-note" data-observatory-summary></p>
           <div class="globe-stage">
-            <article class="globe-panel" data-reveal>
+            <article class="globe-panel">
               <span class="section-kicker">Interactive Globe</span>
               <h2 class="card-title">Rotate, zoom, inspect regions</h2>
               <p class="section-note">
@@ -73,10 +73,26 @@
               </p>
               <div class="globe-canvas" data-globe-canvas></div>
             </article>
-            <article class="globe-sidebar" data-reveal>
+            <article class="globe-sidebar">
               <span class="section-kicker">Selected Layer</span>
               <h2 class="card-title">Regional ranking</h2>
-              <div class="region-list" data-region-list></div>
+              <div class="region-list" data-region-list>
+                <article class="region-item">
+                  <small>2026 · Compute</small>
+                  <strong>US East · 88</strong>
+                  <p class="mini-note">Northern Virginia and East Coast cluster.</p>
+                </article>
+                <article class="region-item">
+                  <small>2026 · Compute</small>
+                  <strong>China East · 84</strong>
+                  <p class="mini-note">Shanghai-centered industrial and cloud density.</p>
+                </article>
+                <article class="region-item">
+                  <small>2026 · Compute</small>
+                  <strong>US West · 83</strong>
+                  <p class="mini-note">Bay Area and West Coast cluster.</p>
+                </article>
+              </div>
             </article>
           </div>
         </section>
