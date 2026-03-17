@@ -26,7 +26,7 @@ const titleByProject = {
   autogenesis: "Autogenesis"
 };
 
-const assetVersion = "20260317e";
+const assetVersion = "20260317f";
 
 const projectContextSections = {
   noesis: [
