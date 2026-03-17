@@ -182,8 +182,8 @@
     globeNode.appendChild(canvas);
 
     const ctx = canvas.getContext("2d");
-    let lon = -28;
-    let lat = 8;
+    let lon = 118;
+    let lat = 10;
     let zoom = 1;
     let dragging = false;
     let lastX = 0;
@@ -266,9 +266,9 @@
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.clip();
 
-      ctx.fillStyle = "rgba(110, 178, 120, 0.28)";
-      ctx.strokeStyle = "rgba(205, 233, 255, 0.34)";
-      ctx.lineWidth = 1;
+      ctx.fillStyle = "rgba(122, 182, 120, 0.36)";
+      ctx.strokeStyle = "rgba(218, 240, 255, 0.4)";
+      ctx.lineWidth = 1.15;
 
       for (const feature of countryFeatures) {
         const polygons =
