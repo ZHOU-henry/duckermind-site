@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Noesis Interactive Globe | Duckermind</title>
+    <meta name="description" content="Interactive globe for the Noesis six-factor AI economy observatory." />
+    <link rel="stylesheet" href="/assets/styles.css?v=20260317b" />
+    <script defer src="/assets/site.js?v=20260317b"></script>
+    <script defer src="/assets/vendor/globe.gl.min.js"></script>
+    <script defer src="/assets/noesis-observatory.js"></script>
+  </head>
+  <body class="theme-noesis">
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-copy">
+              <strong>Duckermind</strong>
+              <span>Noesis Interactive Globe</span>
+            </span>
+          </a>
+          <div class="header-stack">
+            <nav class="nav">
+              <a href="/">Home</a>
+              <a href="/projects/noesis/economy-observatory/">Observatory</a>
+              <a href="/projects/noesis/economy-observatory/methodology/">Methodology</a>
+              <a href="#contact">Contact</a>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="hero hero-home">
+          <article class="panel hero-copy-block" data-reveal>
+            <div class="quick-intro">
+              <span class="eyebrow">Interactive Globe</span>
+              <h1 class="hero-title">Drag, zoom, and switch factors.</h1>
+              <p class="hero-lede">
+                Dedicated globe view for the six-factor AI economy observatory.
+                Switch factors, rotate the earth, zoom in, and compare time
+                slices.
+              </p>
+            </div>
+            <div class="button-row">
+              <a class="button" href="/projects/noesis/economy-observatory/">Back to Observatory</a>
+              <a class="button-secondary" href="/projects/noesis/economy-observatory/methodology/">Methodology</a>
+            </div>
+          </article>
+          <aside class="hero-visual visual-card" data-reveal>
+            <div class="hero-visual-shell">
+              <div class="visual-card-image">
+                <img src="/assets/images/earth-night.jpg" alt="Earth texture used for the interactive observatory globe" loading="eager" />
+              </div>
+              <div class="hero-visual-copy">
+                <span class="panel-label">Observatory mode</span>
+                <strong>One globe, six factors, three time slices.</strong>
+                <p class="mini-note">Regional intensity changes with the selected factor and year.</p>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="section" data-noesis-observatory>
+          <div class="globe-controls" data-factor-buttons>
+            <button class="globe-button globe-button-active" type="button" data-factor="compute">Compute</button>
+            <button class="globe-button" type="button" data-factor="algorithms">Algorithms</button>
+            <button class="globe-button" type="button" data-factor="data">Data</button>
+            <button class="globe-button" type="button" data-factor="storage">Storage</button>
+            <button class="globe-button" type="button" data-factor="energy">Energy</button>
+            <button class="globe-button" type="button" data-factor="talent">AI Talent</button>
+          </div>
+          <div class="globe-controls" data-slice-buttons>
+            <button class="slice-button" type="button" data-slice="2024">2024</button>
+            <button class="slice-button" type="button" data-slice="2025">2025</button>
+            <button class="slice-button slice-button-active" type="button" data-slice="2026">2026</button>
+          </div>
+          <p class="prototype-note" data-observatory-summary></p>
+          <div class="globe-stage">
+            <article class="globe-panel" data-reveal>
+              <span class="section-kicker">Interactive Globe</span>
+              <h2 class="card-title">Rotate, zoom, inspect regions</h2>
+              <p class="section-note">
+                This page isolates the globe interaction so the observatory can
+                behave more like a real product module.
+              </p>
+              <div class="globe-canvas" data-globe-canvas></div>
+            </article>
+            <article class="globe-sidebar" data-reveal>
+              <span class="section-kicker">Selected Layer</span>
+              <h2 class="card-title">Regional ranking</h2>
+              <div class="region-list" data-region-list></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="contact">
+          <div class="contact-band" data-reveal>
+            <div class="contact-grid">
+              <div>
+                <span class="section-kicker">Contact Us</span>
+                <h2 class="card-title">Talk to Duckermind about Noesis.</h2>
+                <p class="section-note">Observatories, AI economics, and AGI-era research systems.</p>
+              </div>
+              <div class="button-row">
+                <a class="button" href="mailto:zhouzehao2018@163.com">zhouzehao2018@163.com</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
