@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Noesis Economy Observatory | Duckermind</title>
     <meta name="description" content="Static prototype for the Noesis six-factor AI economy observatory." />
-    <link rel="stylesheet" href="/assets/styles.css?v=20260317c" />
-    <script defer src="/assets/site.js?v=20260317c"></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=20260317e" />
+    <script defer src="/assets/site.js?v=20260317e"></script>
     <script defer src="/assets/vendor/globe.gl.min.js"></script>
     <script defer src="/assets/noesis-observatory.js"></script>
   </head>
@@ -39,14 +39,13 @@
               <span class="eyebrow">Economy Observatory</span>
               <h1 class="hero-title">A six-factor view of the global AI economy.</h1>
               <p class="hero-lede">
-                Static prototype for a future live observatory covering compute,
-                algorithms, data, storage, energy, and AI talent.
+                Source-disciplined observatory prototype for tracking compute,
+                algorithms, data, storage, energy, and AI talent across major AI economies.
               </p>
               <p class="prototype-note">
-                Prototype note: the cards below use illustrative composite
-                indices built from public indicator logic, designed to show the
-                future interface and data model rather than claim real-time
-                completeness yet.
+                Prototype note: the current build now prefers measured public
+                indicators and explicit carry-forward rules. Where country-level
+                updates are missing, values are held rather than synthetically bumped.
               </p>
             </div>
             <div class="button-row">
@@ -80,8 +79,8 @@
             </article>
             <article class="dashboard-card" data-reveal>
               <span class="panel-label">Regions</span>
-              <strong>6 global nodes</strong>
-              <p class="mini-note">US, EU, China, Gulf, India, Southeast Asia.</p>
+              <strong>16 country nodes</strong>
+              <p class="mini-note">US, China, Japan, Europe core states, India, Singapore, Gulf, and Nordics.</p>
             </article>
             <article class="dashboard-card" data-reveal>
               <span class="panel-label">Cadence</span>
@@ -173,19 +172,19 @@
               <h2 class="card-title">How the prototype should be read</h2>
               <div class="story-grid">
                 <article class="story-card">
-                  <span class="panel-label">Live where possible</span>
-                  <h3 class="card-title">Use real-time public indicators</h3>
-                  <p>Energy, GitHub, and some infrastructure signals can refresh more often.</p>
+                  <span class="panel-label">Measured where possible</span>
+                  <h3 class="card-title">Use current public country indicators</h3>
+                  <p>Compute, talent, publications, GitHub, and electricity layers now tie back to explicit public data sources.</p>
                 </article>
                 <article class="story-card">
-                  <span class="panel-label">Slice where needed</span>
-                  <h3 class="card-title">Use periodic snapshots for slow variables</h3>
-                  <p>Talent, storage, and algorithm density often require quarterly or annual slices.</p>
+                  <span class="panel-label">Carry-forward where needed</span>
+                  <h3 class="card-title">Do not invent annual movement</h3>
+                  <p>When no newer country-level release exists, the observatory now carries forward the latest measured value instead of fabricating 2025 or 2026 jumps.</p>
                 </article>
                 <article class="story-card">
                   <span class="panel-label">Composite by design</span>
-                  <h3 class="card-title">Some factors need inferred indices</h3>
-                  <p>The prototype distinguishes direct measures from weighted composite proxies.</p>
+                  <h3 class="card-title">Keep proxy quality explicit</h3>
+                  <p>Some factors are directly measured more cleanly than others, so the interface now separates stronger measured layers from weaker proxy layers.</p>
                 </article>
               </div>
             </article>

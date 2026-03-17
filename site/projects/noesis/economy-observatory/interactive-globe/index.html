@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Noesis Interactive Globe | Duckermind</title>
     <meta name="description" content="Interactive globe for the Noesis six-factor AI economy observatory." />
-    <link rel="stylesheet" href="/assets/styles.css?v=20260317d" />
-    <script defer src="/assets/site.js?v=20260317d"></script>
-    <script defer src="/assets/vendor/globe.gl.min.js?v=20260317d"></script>
-    <script defer src="/assets/vendor/topojson-client.min.js?v=20260317d"></script>
-    <script defer src="/assets/noesis-observatory.js?v=20260317d"></script>
+    <link rel="stylesheet" href="/assets/styles.css?v=20260317e" />
+    <script defer src="/assets/site.js?v=20260317e"></script>
+    <script defer src="/assets/vendor/globe.gl.min.js?v=20260317e"></script>
+    <script defer src="/assets/vendor/topojson-client.min.js?v=20260317e"></script>
+    <script defer src="/assets/noesis-observatory.js?v=20260317e"></script>
   </head>
   <body class="theme-noesis">
     <div class="page-shell">
@@ -63,20 +63,25 @@
             <button class="slice-button" type="button" data-slice="2025">2025</button>
             <button class="slice-button slice-button-active" type="button" data-slice="2026">2026</button>
           </div>
-          <p class="prototype-note" data-observatory-summary>Compute · 2026 · Composite proxy built from data-center pipeline, hyperscaler capex, accelerator supply, and regional cluster signals.</p>
+          <p class="prototype-note" data-observatory-summary>
+            Compute · 2026 · This observatory now uses measured public indicators and explicit carry-forward rules instead of synthetic annual bumps.
+          </p>
           <div class="globe-stage">
             <article class="globe-panel">
               <span class="section-kicker">Interactive Globe</span>
-              <h2 class="card-title">Rotate, zoom, inspect regions</h2>
+              <h2 class="card-title">Rotate, zoom, inspect public-source country layers</h2>
               <p class="section-note">
-                This page isolates the globe interaction so the observatory can
-                behave more like a real product module.
+                The light field shows denser or sparser activity based on measured scores.
+                The current build favors source honesty over fake precision.
               </p>
               <div class="globe-canvas" data-globe-canvas></div>
             </article>
             <article class="globe-sidebar">
               <span class="section-kicker">Selected Layer</span>
-              <h2 class="card-title">Regional ranking</h2>
+              <h2 class="card-title">Country ranking</h2>
+              <p class="section-note globe-year-note" data-observatory-year-note>
+                2026 current observatory synthesis.
+              </p>
               <div class="region-list" data-region-list>
                 <article class="region-item">
                   <small>2026 · Compute</small>
@@ -93,6 +98,15 @@
                   <strong>US West · 83</strong>
                   <p class="mini-note">Bay Area and West Coast cluster.</p>
                 </article>
+              </div>
+              <div class="topic-doc-section">
+                <span class="section-kicker">Primary Sources</span>
+                <ul class="globe-source-list" data-observatory-sources>
+                  <li class="globe-source-item">
+                    <a href="https://d3i91vx6n7fixv.cloudfront.net/" target="_blank" rel="noreferrer">Stanford HAI Global AI Vibrancy Tool</a>
+                    <p>Country-level compute, talent, GitHub, model, publication, and patent indicators.</p>
+                  </li>
+                </ul>
               </div>
             </article>
           </div>

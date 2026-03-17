@@ -1,274 +1,253 @@
 (function () {
-  function init() {
-  const root = document.querySelector("[data-noesis-observatory]");
-  if (!root) return;
+  const DATA_URL = "/assets/data/noesis-observatory.json";
+  const TOPOLOGY_URL = "/assets/data/countries-110m.json";
 
-  const factorButtons = root.querySelector("[data-factor-buttons]");
-  const sliceButtons = root.querySelector("[data-slice-buttons]");
-  const regionList = root.querySelector("[data-region-list]");
-  const summary = root.querySelector("[data-observatory-summary]");
-  const globeNode = root.querySelector("[data-globe-canvas]");
-  if (!factorButtons || !sliceButtons || !regionList || !summary || !globeNode) {
-    return;
+  function hexToRgba(hex, alpha) {
+    const safe = String(hex || "#1491ff").replace("#", "");
+    const value = safe.length === 3
+      ? safe
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : safe;
+    const red = parseInt(value.slice(0, 2), 16);
+    const green = parseInt(value.slice(2, 4), 16);
+    const blue = parseInt(value.slice(4, 6), 16);
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
   }
 
-  const factors = {
-    compute: {
-      label: "Compute",
-      color: "rgba(20,135,255,0.82)",
-      summary:
-        "Composite proxy built from data-center pipeline, hyperscaler capex, accelerator supply, and regional cluster signals."
-    },
-    algorithms: {
-      label: "Algorithms",
-      color: "rgba(118,69,255,0.82)",
-      summary:
-        "Composite proxy built from model-release density, frontier benchmark movement, and research-lab activity."
-    },
-    data: {
-      label: "Data",
-      color: "rgba(5,129,169,0.82)",
-      summary:
-        "Composite proxy built from dataset ecosystems, platform concentration, public data infrastructure, and data partnerships."
-    },
-    storage: {
-      label: "Storage",
-      color: "rgba(11,144,196,0.82)",
-      summary:
-        "Composite proxy built from storage buildout, cloud archive density, and data-center storage expansion."
-    },
-    energy: {
-      label: "Energy",
-      color: "rgba(214,154,52,0.88)",
-      summary:
-        "Composite proxy built from grid readiness, power agreements, energy abundance, and AI-infrastructure power accessibility."
-    },
-    talent: {
-      label: "AI Talent",
-      color: "rgba(222,107,72,0.86)",
-      summary:
-        "Composite proxy built from research clusters, hiring concentration, migration patterns, and institutional density."
+  function seededRandom(seed) {
+    let state = seed % 2147483647;
+    if (state <= 0) state += 2147483646;
+    return function next() {
+      state = (state * 16807) % 2147483647;
+      return (state - 1) / 2147483646;
+    };
+  }
+
+  function buildSeed(parts) {
+    let hash = 0;
+    parts.forEach((part) => {
+      const text = String(part);
+      for (let index = 0; index < text.length; index += 1) {
+        hash = (hash * 31 + text.charCodeAt(index)) >>> 0;
+      }
+    });
+    return hash || 1;
+  }
+
+  function projectPoint(lat, lng, centerLon, centerLat, radius) {
+    const phi = (lat * Math.PI) / 180;
+    const lambda = (lng * Math.PI) / 180;
+    const phi0 = (centerLat * Math.PI) / 180;
+    const lambda0 = (centerLon * Math.PI) / 180;
+    const delta = lambda - lambda0;
+
+    const cosc =
+      Math.sin(phi0) * Math.sin(phi) +
+      Math.cos(phi0) * Math.cos(phi) * Math.cos(delta);
+
+    return {
+      x: radius * Math.cos(phi) * Math.sin(delta),
+      y:
+        radius *
+        (Math.cos(phi0) * Math.sin(phi) -
+          Math.sin(phi0) * Math.cos(phi) * Math.cos(delta)),
+      visible: cosc > 0,
+      depth: cosc,
+    };
+  }
+
+  function buildPointCloud(items, factorKey, yearKey) {
+    const points = [];
+
+    items.forEach((item, itemIndex) => {
+      const anchors = item.anchors && item.anchors.length ? item.anchors : [[item.lat, item.lng]];
+      const seed = buildSeed([yearKey, factorKey, item.iso3 || item.name, itemIndex]);
+      const random = seededRandom(seed);
+      const totalPoints = Math.max(28, Math.round(item.value * 2.25));
+      const perAnchor = Math.max(12, Math.round(totalPoints / anchors.length));
+      const spreadLat = 0.34 + item.value * 0.013;
+      const spreadLng = 0.48 + item.value * 0.019;
+
+      anchors.forEach((anchor, anchorIndex) => {
+        const [baseLat, baseLng] = anchor;
+        for (let index = 0; index < perAnchor; index += 1) {
+          const jitterLat = (random() - 0.5) * spreadLat * (0.8 + anchorIndex * 0.12);
+          const jitterLng = (random() - 0.5) * spreadLng * (0.8 + anchorIndex * 0.12);
+          const intensity = 0.35 + random() * 0.65;
+          points.push({
+            country: item.name,
+            lat: baseLat + jitterLat,
+            lng: baseLng + jitterLng,
+            intensity,
+            value: item.value,
+          });
+        }
+
+        const orbitPoints = Math.max(6, Math.round(item.value * 0.18));
+        for (let index = 0; index < orbitPoints; index += 1) {
+          const angle = random() * Math.PI * 2;
+          const orbitRadiusLat = spreadLat * (0.75 + random() * 0.95);
+          const orbitRadiusLng = spreadLng * (0.75 + random() * 1.15);
+          const intensity = 0.18 + random() * 0.35;
+          points.push({
+            country: item.name,
+            lat: baseLat + Math.sin(angle) * orbitRadiusLat,
+            lng: baseLng + Math.cos(angle) * orbitRadiusLng,
+            intensity,
+            value: item.value,
+          });
+        }
+      });
+    });
+
+    return points;
+  }
+
+  async function init() {
+    const root = document.querySelector("[data-noesis-observatory]");
+    if (!root) return;
+
+    const factorButtons = root.querySelector("[data-factor-buttons]");
+    const sliceButtons = root.querySelector("[data-slice-buttons]");
+    const regionList = root.querySelector("[data-region-list]");
+    const summary = root.querySelector("[data-observatory-summary]");
+    const globeNode = root.querySelector("[data-globe-canvas]");
+    const yearNote = root.querySelector("[data-observatory-year-note]");
+    const sourceList = root.querySelector("[data-observatory-sources]");
+    if (
+      !factorButtons ||
+      !sliceButtons ||
+      !regionList ||
+      !summary ||
+      !globeNode ||
+      !yearNote ||
+      !sourceList
+    ) {
+      return;
     }
-  };
 
-  const observatoryData = {
-    "2024": {
-      compute: [
-        { name: "US East", lat: 38.9, lng: -77.0, value: 84, note: "Northern Virginia and East Coast cluster" },
-        { name: "US West", lat: 37.4, lng: -122.0, value: 79, note: "Bay Area and West Coast cluster" },
-        { name: "Pacific Northwest", lat: 47.6, lng: -122.3, value: 72, note: "Seattle and cloud-region expansion belt" },
-        { name: "Europe Core", lat: 50.1, lng: 8.6, value: 63, note: "Frankfurt, Amsterdam, Paris, London corridor" },
-        { name: "China East", lat: 31.2, lng: 121.4, value: 78, note: "Shanghai-centered industrial and cloud density" },
-        { name: "China North", lat: 39.9, lng: 116.4, value: 74, note: "Beijing policy, model, and state-backed cluster" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 59, note: "Tokyo compute and enterprise AI base" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 56, note: "Seoul semiconductor and cloud demand cluster" },
-        { name: "India", lat: 19.0, lng: 72.8, value: 49, note: "Mumbai + Bengaluru buildout phase" },
-        { name: "Singapore / Johor", lat: 1.35, lng: 103.8, value: 57, note: "Regional infra and logistics role" },
-        { name: "Pacific Node", lat: 21.3, lng: -157.8, value: 43, note: "Submarine-cable and Pacific logistics proxy" },
-        { name: "Gulf", lat: 24.5, lng: 54.4, value: 41, note: "Early energy-backed compute push" }
-      ],
-      algorithms: [
-        { name: "US West", lat: 37.4, lng: -122.0, value: 90, note: "Highest frontier model and lab density" },
-        { name: "US East", lat: 42.3, lng: -71.0, value: 66, note: "Academic + frontier research cluster" },
-        { name: "China", lat: 39.9, lng: 116.4, value: 74, note: "Model systems and applied algorithm scale" },
-        { name: "UK", lat: 51.5, lng: -0.1, value: 58, note: "DeepMind and London research concentration" },
-        { name: "France", lat: 48.8, lng: 2.3, value: 54, note: "Paris / Mistral / Inria / math-ML cluster" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 51, note: "Enterprise and robotics-adjacent algorithm strength" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 48, note: "Vision and semiconductor-adjacent algorithm talent" },
-        { name: "India", lat: 12.9, lng: 77.6, value: 44, note: "Fast-growing talent and product lab presence" },
-        { name: "Singapore", lat: 1.29, lng: 103.85, value: 46, note: "Regional research and deployment node" }
-      ],
-      data: [
-        { name: "US", lat: 39.0, lng: -98.0, value: 86, note: "Platform concentration and open-data ecosystem scale" },
-        { name: "Europe", lat: 50.1, lng: 8.6, value: 60, note: "High institutional density, tighter governance" },
-        { name: "China", lat: 31.2, lng: 121.4, value: 75, note: "Large-scale domestic data ecosystem" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 47, note: "Industrial and enterprise data-rich environment" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 44, note: "Consumer-tech and device ecosystem data strength" },
-        { name: "India", lat: 20.5, lng: 78.9, value: 51, note: "Population-scale digital exhaust and services data" },
-        { name: "SEA", lat: 1.35, lng: 103.8, value: 45, note: "Regional logistics and consumer-scale data growth" }
-      ],
-      storage: [
-        { name: "US East", lat: 38.9, lng: -77.0, value: 82, note: "Large hyperscaler archive/storage presence" },
-        { name: "US West", lat: 37.4, lng: -122.0, value: 76, note: "Cloud backbone and research-adjacent storage" },
-        { name: "Europe Core", lat: 52.3, lng: 4.9, value: 61, note: "Amsterdam / Frankfurt corridor" },
-        { name: "China", lat: 31.2, lng: 121.4, value: 72, note: "Large domestic cloud storage footprint" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 54, note: "Enterprise cloud and storage-heavy industrial demand" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 49, note: "High-density storage and device ecosystem support" },
-        { name: "Singapore", lat: 1.29, lng: 103.85, value: 50, note: "Regional data warehousing node" }
-      ],
-      energy: [
-        { name: "US", lat: 39.0, lng: -98.0, value: 73, note: "Mixed grid, rising AI power demand" },
-        { name: "US West", lat: 37.4, lng: -122.0, value: 68, note: "Power-constrained but capital-rich West Coast corridor" },
-        { name: "Nordics", lat: 59.3, lng: 18.1, value: 79, note: "Clean power and cool-climate infra advantage" },
-        { name: "Canada", lat: 45.4, lng: -73.6, value: 68, note: "Hydro and cooling advantage" },
-        { name: "China", lat: 35.8, lng: 104.1, value: 76, note: "Scale advantage with mixed energy constraints" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 46, note: "Import-dependent energy context with high demand" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 44, note: "Dense industrial load and constrained energy profile" },
-        { name: "Gulf", lat: 24.5, lng: 54.4, value: 71, note: "Energy-backed compute ambition" }
-      ],
-      talent: [
-        { name: "US West", lat: 37.4, lng: -122.0, value: 91, note: "Bay Area frontier cluster" },
-        { name: "US East", lat: 42.3, lng: -71.0, value: 67, note: "Boston / NYC research and startup layer" },
-        { name: "UK", lat: 51.5, lng: -0.1, value: 63, note: "DeepMind and allied ecosystem" },
-        { name: "France", lat: 48.8, lng: 2.3, value: 61, note: "Mistral / Inria / academic cluster" },
-        { name: "Japan", lat: 35.7, lng: 139.7, value: 57, note: "Robotics, enterprise, and advanced engineering talent" },
-        { name: "Korea", lat: 37.56, lng: 126.98, value: 53, note: "Semiconductor and applied AI talent density" },
-        { name: "India", lat: 12.9, lng: 77.6, value: 72, note: "Large-scale engineering and AI labor pool" },
-        { name: "Singapore", lat: 1.29, lng: 103.85, value: 58, note: "Dense regional high-skill node" },
-        { name: "Israel", lat: 32.08, lng: 34.78, value: 55, note: "High-intensity entrepreneurial AI cluster" }
-      ]
-    },
-    "2025": {},
-    "2026": {}
-  };
+    const [dataResponse, topologyResponse] = await Promise.all([
+      fetch(DATA_URL),
+      fetch(TOPOLOGY_URL),
+    ]);
+    const observatory = await dataResponse.json();
+    const topology = await topologyResponse.json();
+    const countryFeatures =
+      window.topojson && topology.objects && topology.objects.countries
+        ? window.topojson.feature(topology, topology.objects.countries).features
+        : [];
 
-  observatoryData["2025"] = JSON.parse(JSON.stringify(observatoryData["2024"]));
-  observatoryData["2026"] = JSON.parse(JSON.stringify(observatoryData["2024"]));
-
-  const bump = {
-    compute: [2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 4, 6],
-    algorithms: [2, 1, 2, 2, 2, 2, 2, 2, 3],
-    data: [1, 1, 2, 1, 1, 2, 2],
-    storage: [2, 1, 2, 2, 1, 1, 3],
-    energy: [1, 1, 2, 1, 2, 1, 1, 4],
-    talent: [1, 1, 1, 2, 1, 1, 3, 2, 1]
-  };
-
-  Object.keys(observatoryData["2025"]).forEach((factor) => {
-    observatoryData["2025"][factor].forEach((item, index) => {
-      item.value = Math.min(item.value + bump[factor][index], 100);
-    });
-  });
-
-  Object.keys(observatoryData["2026"]).forEach((factor) => {
-    observatoryData["2026"][factor].forEach((item, index) => {
-      item.value = Math.min(item.value + bump[factor][index] * 2, 100);
-    });
-  });
-
-  let currentFactor = "compute";
-  let currentYear = "2026";
-  let countryFeatures = [];
-
-  function sphericalToCartesian(lat, lng) {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lng + 180) * (Math.PI / 180);
-    return {
-      x: Math.sin(phi) * Math.cos(theta),
-      y: Math.cos(phi),
-      z: Math.sin(phi) * Math.sin(theta)
-    };
-  }
-
-  function rotatePoint(point, lon, lat) {
-    const lonRad = lon * (Math.PI / 180);
-    const latRad = lat * (Math.PI / 180);
-
-    const x1 = point.x * Math.cos(lonRad) - point.z * Math.sin(lonRad);
-    const z1 = point.x * Math.sin(lonRad) + point.z * Math.cos(lonRad);
-    const y1 = point.y;
-
-    return {
-      x: x1,
-      y: y1 * Math.cos(latRad) - z1 * Math.sin(latRad),
-      z: y1 * Math.sin(latRad) + z1 * Math.cos(latRad)
-    };
-  }
-
-  function initFallbackGlobe() {
     const canvas = document.createElement("canvas");
     canvas.className = "globe-canvas";
     globeNode.innerHTML = "";
     globeNode.appendChild(canvas);
 
-    const ctx = canvas.getContext("2d");
-    let lon = 118;
-    let lat = 10;
-    let zoom = 1;
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
+    const context = canvas.getContext("2d");
+    const pointCache = new Map();
+    const state = {
+      factorKey: "compute",
+      yearKey: "2026",
+      selectedCountry: null,
+      centerLon: 112,
+      centerLat: 18,
+      zoom: 1,
+      dragging: false,
+      lastX: 0,
+      lastY: 0,
+    };
 
-    function resize() {
-      const rect = globeNode.getBoundingClientRect();
-      if (!rect.width || !rect.height) {
-        requestAnimationFrame(resize);
-        return;
-      }
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = Math.max(640, rect.width * ratio);
-      canvas.height = Math.max(420, rect.height * ratio);
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      draw();
+    function getFactorMeta() {
+      return observatory.factors[state.factorKey];
     }
 
-    function projectPoint(latValue, lngValue, cx, cy, radius) {
-      const p = rotatePoint(sphericalToCartesian(latValue, lngValue), lon, lat);
-      return {
-        x: cx + radius * p.x,
-        y: cy - radius * p.y,
-        z: p.z
-      };
+    function getItems() {
+      const items = observatory.years[state.yearKey][state.factorKey] || [];
+      return [...items].sort((left, right) => right.value - left.value);
     }
 
-    function drawGraticule(cx, cy, radius) {
-      ctx.strokeStyle = "rgba(255,255,255,0.12)";
-      ctx.lineWidth = 1;
-      for (let latLine = -60; latLine <= 60; latLine += 30) {
-        ctx.beginPath();
-        let started = false;
-        for (let lngLine = -180; lngLine <= 180; lngLine += 4) {
-          const p = rotatePoint(sphericalToCartesian(latLine, lngLine), lon, lat);
-          if (p.z < 0) {
-            started = false;
-            continue;
-          }
-          const x = cx + radius * p.x;
-          const y = cy - radius * p.y;
-          if (!started) {
-            ctx.moveTo(x, y);
-            started = true;
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
-        ctx.stroke();
+    function getSelectedCountry(items) {
+      if (!state.selectedCountry || !items.some((item) => item.name === state.selectedCountry)) {
+        state.selectedCountry = items[0] ? items[0].name : null;
       }
-      for (let lngLine = -150; lngLine <= 180; lngLine += 30) {
-        ctx.beginPath();
-        let started = false;
-        for (let latLine = -90; latLine <= 90; latLine += 4) {
-          const p = rotatePoint(sphericalToCartesian(latLine, lngLine), lon, lat);
-          if (p.z < 0) {
-            started = false;
-            continue;
-          }
-          const x = cx + radius * p.x;
-          const y = cy - radius * p.y;
-          if (!started) {
-            ctx.moveTo(x, y);
-            started = true;
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
-        ctx.stroke();
+      return items.find((item) => item.name === state.selectedCountry) || items[0] || null;
+    }
+
+    function getPointCloud(items) {
+      const cacheKey = `${state.yearKey}:${state.factorKey}`;
+      if (!pointCache.has(cacheKey)) {
+        pointCache.set(cacheKey, buildPointCloud(items, state.factorKey, state.yearKey));
+      }
+      return pointCache.get(cacheKey);
+    }
+
+    function drawStars(width, height) {
+      const starRandom = seededRandom(17032026);
+      for (let index = 0; index < 180; index += 1) {
+        const x = starRandom() * width;
+        const y = starRandom() * height;
+        const radius = starRandom() > 0.94 ? 1.9 : 0.8 + starRandom() * 0.8;
+        context.fillStyle = `rgba(255,255,255,${0.06 + starRandom() * 0.28})`;
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
       }
     }
 
-    function drawCountries(cx, cy, radius) {
+    function drawSphere(centerX, centerY, radius) {
+      context.save();
+
+      const halo = context.createRadialGradient(
+        centerX,
+        centerY,
+        radius * 0.22,
+        centerX,
+        centerY,
+        radius * 1.38
+      );
+      halo.addColorStop(0, "rgba(113, 167, 255, 0.08)");
+      halo.addColorStop(0.5, "rgba(58, 133, 255, 0.12)");
+      halo.addColorStop(1, "rgba(9, 18, 32, 0)");
+      context.fillStyle = halo;
+      context.beginPath();
+      context.arc(centerX, centerY, radius * 1.25, 0, Math.PI * 2);
+      context.fill();
+
+      const ocean = context.createRadialGradient(
+        centerX - radius * 0.3,
+        centerY - radius * 0.34,
+        radius * 0.1,
+        centerX,
+        centerY,
+        radius
+      );
+      ocean.addColorStop(0, "rgba(88, 172, 255, 0.95)");
+      ocean.addColorStop(0.28, "rgba(31, 84, 171, 0.98)");
+      ocean.addColorStop(0.72, "rgba(12, 28, 68, 1)");
+      ocean.addColorStop(1, "rgba(6, 12, 28, 1)");
+
+      context.fillStyle = ocean;
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.fill();
+
+      context.strokeStyle = "rgba(190, 227, 255, 0.32)";
+      context.lineWidth = 1.4;
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.stroke();
+
+      context.restore();
+    }
+
+    function drawCountryLayer(centerX, centerY, radius) {
       if (!countryFeatures.length) return;
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.clip();
-
-      ctx.fillStyle = "rgba(122, 182, 120, 0.36)";
-      ctx.strokeStyle = "rgba(218, 240, 255, 0.4)";
-      ctx.lineWidth = 1.15;
+      context.save();
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.clip();
 
       for (const feature of countryFeatures) {
         const polygons =
@@ -278,194 +257,338 @@
 
         for (const polygon of polygons) {
           for (const ring of polygon) {
-            let visibleCount = 0;
-            ctx.beginPath();
+            let visiblePoints = 0;
+            context.beginPath();
             let started = false;
-            for (const [lngValue, latValue] of ring) {
-              const point = projectPoint(latValue, lngValue, cx, cy, radius);
-              if (point.z < -0.02) {
+
+            for (const coordinate of ring) {
+              const lng = coordinate[0];
+              const lat = coordinate[1];
+              const point = projectPoint(lat, lng, state.centerLon, state.centerLat, radius);
+              if (!point.visible || point.depth < 0.015) {
                 started = false;
                 continue;
               }
-              visibleCount += 1;
+              visiblePoints += 1;
+              const x = centerX + point.x;
+              const y = centerY - point.y;
               if (!started) {
-                ctx.moveTo(point.x, point.y);
+                context.moveTo(x, y);
                 started = true;
               } else {
-                ctx.lineTo(point.x, point.y);
+                context.lineTo(x, y);
               }
             }
-            if (visibleCount > 2) {
-              ctx.closePath();
-              ctx.fill();
-              ctx.stroke();
+
+            if (visiblePoints > 2) {
+              context.closePath();
+              const land = context.createLinearGradient(
+                centerX - radius,
+                centerY - radius,
+                centerX + radius,
+                centerY + radius
+              );
+              land.addColorStop(0, "rgba(86, 142, 88, 0.88)");
+              land.addColorStop(0.55, "rgba(132, 182, 118, 0.94)");
+              land.addColorStop(1, "rgba(173, 198, 125, 0.82)");
+              context.fillStyle = land;
+              context.strokeStyle = "rgba(244, 251, 255, 0.58)";
+              context.lineWidth = 1.1;
+              context.fill();
+              context.stroke();
+              context.strokeStyle = "rgba(16, 29, 42, 0.18)";
+              context.lineWidth = 0.45;
+              context.stroke();
             }
           }
         }
       }
 
-      ctx.restore();
+      context.restore();
     }
 
-    function draw() {
-      const rect = globeNode.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      ctx.clearRect(0, 0, width, height);
+    function drawGraticule(centerX, centerY, radius) {
+      context.save();
+      context.strokeStyle = "rgba(232, 244, 255, 0.13)";
+      context.lineWidth = 0.8;
 
-      const cx = width / 2;
-      const cy = height / 2;
-      const radius = Math.min(width, height) * 0.38 * zoom;
+      for (let lat = -60; lat <= 60; lat += 30) {
+        context.beginPath();
+        let started = false;
+        for (let lng = -180; lng <= 180; lng += 4) {
+          const point = projectPoint(lat, lng, state.centerLon, state.centerLat, radius);
+          if (!point.visible) {
+            started = false;
+            continue;
+          }
+          const x = centerX + point.x;
+          const y = centerY - point.y;
+          if (!started) {
+            context.moveTo(x, y);
+            started = true;
+          } else {
+            context.lineTo(x, y);
+          }
+        }
+        context.stroke();
+      }
 
-      const sphere = ctx.createRadialGradient(cx - radius * 0.25, cy - radius * 0.3, radius * 0.12, cx, cy, radius);
-      sphere.addColorStop(0, "rgba(67, 159, 255, 0.8)");
-      sphere.addColorStop(0.5, "rgba(18, 44, 84, 0.96)");
-      sphere.addColorStop(1, "rgba(7, 16, 32, 1)");
-      ctx.fillStyle = sphere;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
+      for (let lng = -150; lng <= 180; lng += 30) {
+        context.beginPath();
+        let started = false;
+        for (let lat = -90; lat <= 90; lat += 4) {
+          const point = projectPoint(lat, lng, state.centerLon, state.centerLat, radius);
+          if (!point.visible) {
+            started = false;
+            continue;
+          }
+          const x = centerX + point.x;
+          const y = centerY - point.y;
+          if (!started) {
+            context.moveTo(x, y);
+            started = true;
+          } else {
+            context.lineTo(x, y);
+          }
+        }
+        context.stroke();
+      }
 
-      drawCountries(cx, cy, radius);
-      drawGraticule(cx, cy, radius);
+      context.restore();
+    }
 
-      const items = observatoryData[currentYear][currentFactor];
-      const factorColor = factors[currentFactor].color;
-      items.forEach((item) => {
-        const p = rotatePoint(sphericalToCartesian(item.lat, item.lng), lon, lat);
-        if (p.z < 0) return;
-        const x = cx + radius * p.x;
-        const y = cy - radius * p.y;
-        const dotRadius = 3 + item.value * 0.06 * zoom;
-        ctx.beginPath();
-        ctx.fillStyle = factorColor;
-        ctx.globalAlpha = 0.22;
-        ctx.arc(x, y, dotRadius * 2.8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-        ctx.fillStyle = factorColor;
-        ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "rgba(255,255,255,0.88)";
-        ctx.font = "12px Manrope";
-        ctx.fillText(item.name, x + dotRadius + 4, y - dotRadius - 2);
+    function drawPointCloud(points, centerX, centerY, radius, color, selectedCountry) {
+      context.save();
+      context.globalCompositeOperation = "lighter";
+
+      for (const point of points) {
+        const projected = projectPoint(
+          point.lat,
+          point.lng,
+          state.centerLon,
+          state.centerLat,
+          radius
+        );
+        if (!projected.visible || projected.depth < 0.02) continue;
+
+        const x = centerX + projected.x;
+        const y = centerY - projected.y;
+        const isSelected = selectedCountry && point.country === selectedCountry.name;
+        const baseRadius = 0.26 + point.intensity * 0.85 + point.value * 0.0025;
+        const glowRadius = baseRadius * (isSelected ? 9.6 : 6.2);
+        const coreRadius = baseRadius * (isSelected ? 1.75 : 1.18);
+
+        context.fillStyle = hexToRgba(color, isSelected ? 0.22 : 0.085);
+        context.beginPath();
+        context.arc(x, y, glowRadius, 0, Math.PI * 2);
+        context.fill();
+
+        context.fillStyle = hexToRgba(color, isSelected ? 0.96 : 0.74);
+        context.beginPath();
+        context.arc(x, y, coreRadius, 0, Math.PI * 2);
+        context.fill();
+      }
+
+      context.restore();
+    }
+
+    function drawLabels(items, centerX, centerY, radius, selectedCountry) {
+      context.save();
+      context.font = '600 12px "Manrope", sans-serif';
+      context.textBaseline = "middle";
+
+      items.slice(0, 6).forEach((item) => {
+        const point = projectPoint(item.lat, item.lng, state.centerLon, state.centerLat, radius);
+        if (!point.visible || point.depth < 0.08) return;
+
+        const x = centerX + point.x;
+        const y = centerY - point.y;
+        const isSelected = selectedCountry && item.name === selectedCountry.name;
+        context.fillStyle = isSelected
+          ? "rgba(255, 245, 220, 0.96)"
+          : "rgba(236, 244, 255, 0.82)";
+        context.fillText(item.name, x + 8, y - 10);
+      });
+
+      context.restore();
+    }
+
+    function drawSelectedOrbit(centerX, centerY, radius, selectedCountry, color) {
+      if (!selectedCountry) return;
+      const point = projectPoint(
+        selectedCountry.lat,
+        selectedCountry.lng,
+        state.centerLon,
+        state.centerLat,
+        radius
+      );
+      if (!point.visible || point.depth < 0.03) return;
+
+      const x = centerX + point.x;
+      const y = centerY - point.y;
+      context.save();
+      context.strokeStyle = hexToRgba(color, 0.86);
+      context.lineWidth = 1.3;
+      context.beginPath();
+      context.arc(x, y, 15, 0, Math.PI * 2);
+      context.stroke();
+      context.strokeStyle = "rgba(255,255,255,0.72)";
+      context.beginPath();
+      context.arc(x, y, 6, 0, Math.PI * 2);
+      context.stroke();
+      context.restore();
+    }
+
+    function renderSidebar(items, factorMeta, selectedCountry) {
+      const yearNoteText = observatory.yearNotes[state.yearKey] || "";
+      const sourceHtml = (factorMeta.sources || [])
+        .map(
+          (source) => `
+            <li class="globe-source-item">
+              <a href="${source.url}" target="_blank" rel="noreferrer">${source.name}</a>
+              <p>${source.detail}</p>
+            </li>
+          `
+        )
+        .join("");
+
+      yearNote.textContent = yearNoteText;
+      sourceList.innerHTML = sourceHtml;
+
+      regionList.innerHTML = items
+        .map((item) => {
+          const isSelected = selectedCountry && item.name === selectedCountry.name;
+          const metrics = (item.metrics || [])
+            .slice(0, 3)
+            .map(
+              (metric) => `
+                <li class="region-metric">
+                  <span>${metric.label}</span>
+                  <strong>${metric.value}</strong>
+                </li>
+              `
+            )
+            .join("");
+          return `
+            <article class="region-item ${isSelected ? "region-item-active" : ""}" data-country="${item.name}">
+              <small>${state.yearKey} · ${factorMeta.label}</small>
+              <strong>${item.name} · ${item.value}</strong>
+              <p class="mini-note">${item.note}</p>
+              <ul class="region-metric-list">${metrics}</ul>
+            </article>
+          `;
+        })
+        .join("");
+
+      regionList.querySelectorAll("[data-country]").forEach((node) => {
+        node.addEventListener("click", () => {
+          state.selectedCountry = node.getAttribute("data-country");
+          render();
+        });
       });
     }
 
+    function render() {
+      const rect = globeNode.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      if (!width || !height) return;
+
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(720, Math.round(width * ratio));
+      canvas.height = Math.max(460, Math.round(height * ratio));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+      context.clearRect(0, 0, width, height);
+      drawStars(width, height);
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) * 0.39 * state.zoom;
+      drawSphere(centerX, centerY, radius);
+      drawCountryLayer(centerX, centerY, radius);
+      drawGraticule(centerX, centerY, radius);
+
+      const factorMeta = getFactorMeta();
+      const items = getItems();
+      const selectedCountry = getSelectedCountry(items);
+      const points = getPointCloud(items);
+
+      drawPointCloud(points, centerX, centerY, radius, factorMeta.color, selectedCountry);
+      drawSelectedOrbit(centerX, centerY, radius, selectedCountry, factorMeta.color);
+      drawLabels(items, centerX, centerY, radius, selectedCountry);
+
+      summary.textContent = `${factorMeta.label} · ${state.yearKey} · ${factorMeta.summary} ${factorMeta.methodology}`;
+      renderSidebar(items, factorMeta, selectedCountry);
+    }
+
+    function updateFactorButtons(activeFactor) {
+      factorButtons.querySelectorAll("button").forEach((button) => {
+        button.classList.toggle("globe-button-active", button.dataset.factor === activeFactor);
+      });
+    }
+
+    function updateSliceButtons(activeYear) {
+      sliceButtons.querySelectorAll("button").forEach((button) => {
+        button.classList.toggle("slice-button-active", button.dataset.slice === activeYear);
+      });
+    }
+
+    factorButtons.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.factorKey = button.dataset.factor;
+        state.selectedCountry = null;
+        updateFactorButtons(state.factorKey);
+        render();
+      });
+    });
+
+    sliceButtons.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.yearKey = button.dataset.slice;
+        state.selectedCountry = null;
+        updateSliceButtons(state.yearKey);
+        render();
+      });
+    });
+
     canvas.addEventListener("pointerdown", (event) => {
-      dragging = true;
-      lastX = event.clientX;
-      lastY = event.clientY;
+      state.dragging = true;
+      state.lastX = event.clientX;
+      state.lastY = event.clientY;
       canvas.setPointerCapture(event.pointerId);
     });
 
     canvas.addEventListener("pointermove", (event) => {
-      if (!dragging) return;
-      const deltaX = event.clientX - lastX;
-      const deltaY = event.clientY - lastY;
-      lon += deltaX * 0.35;
-      lat = Math.max(-70, Math.min(70, lat + deltaY * 0.22));
-      lastX = event.clientX;
-      lastY = event.clientY;
-      draw();
+      if (!state.dragging) return;
+      const deltaX = event.clientX - state.lastX;
+      const deltaY = event.clientY - state.lastY;
+      state.centerLon -= deltaX * 0.24;
+      state.centerLat = Math.max(-70, Math.min(70, state.centerLat + deltaY * 0.18));
+      state.lastX = event.clientX;
+      state.lastY = event.clientY;
+      render();
     });
 
-    canvas.addEventListener("pointerup", () => {
-      dragging = false;
-    });
+    function endDrag() {
+      state.dragging = false;
+    }
 
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointerleave", endDrag);
     canvas.addEventListener("wheel", (event) => {
       event.preventDefault();
-      const delta = event.deltaY > 0 ? -0.08 : 0.08;
-      zoom = Math.max(0.72, Math.min(1.55, zoom + delta));
-      draw();
+      state.zoom = Math.max(0.76, Math.min(1.42, state.zoom + (event.deltaY > 0 ? -0.06 : 0.06)));
+      render();
     });
 
-    window.addEventListener("resize", resize);
-    async function loadCountryData() {
-      try {
-        const response = await fetch("/assets/data/countries-110m.json");
-        const topology = await response.json();
-        if (window.topojson && topology.objects && topology.objects.countries) {
-          countryFeatures = window.topojson.feature(topology, topology.objects.countries).features;
-          draw();
-        }
-      } catch (error) {
-        // Leave the globe usable even if boundary data fails.
-      }
-    }
+    window.addEventListener("resize", render);
 
-    loadCountryData();
-    resize();
-    return {
-      update: draw
-    };
-  }
-
-  function buildPointData(items, color) {
-    return items.map((item) => ({
-      ...item,
-      color,
-      radius: 0.28 + item.value * 0.0042,
-      altitude: 0.02 + item.value * 0.0018
-    }));
-  }
-
-  let globe = null;
-  let fallback = null;
-
-  fallback = initFallbackGlobe();
-
-  function applyData() {
-    const factorMeta = factors[currentFactor];
-    const items = observatoryData[currentYear][currentFactor];
-    const sorted = [...items].sort((a, b) => b.value - a.value);
-
-    if (fallback) {
-      fallback.update();
-    }
-
-    summary.textContent = `${factorMeta.label} · ${currentYear} · ${factorMeta.summary}`;
-    regionList.innerHTML = sorted
-      .map(
-        (item) => `
-          <article class="region-item">
-            <small>${currentYear} · ${factorMeta.label}</small>
-            <strong>${item.name} · ${item.value}</strong>
-            <p class="mini-note">${item.note}</p>
-          </article>
-        `
-      )
-      .join("");
-  }
-
-  factorButtons.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      currentFactor = button.dataset.factor;
-      factorButtons
-        .querySelectorAll("button")
-        .forEach((node) => node.classList.toggle("globe-button-active", node === button));
-      applyData();
-    });
-  });
-
-  sliceButtons.querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", () => {
-      currentYear = button.dataset.slice;
-      sliceButtons
-        .querySelectorAll("button")
-        .forEach((node) => node.classList.toggle("slice-button-active", node === button));
-      applyData();
-    });
-  });
-
-  window.addEventListener("resize", () => {
-    if (!globe) return;
-    globe.width(globeNode.clientWidth || 720);
-  });
-
-  applyData();
+    updateFactorButtons(state.factorKey);
+    updateSliceButtons(state.yearKey);
+    render();
   }
 
   if (document.readyState === "complete") {
