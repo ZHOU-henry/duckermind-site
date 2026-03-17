@@ -6,6 +6,11 @@ clear reuse permission.
 ## Source
 
 - Unsplash License: <https://unsplash.com/license>
+- Globe.GL:
+  - <https://globe.gl/>
+  - used for the Noesis Economy Observatory interactive globe prototype
+- Globe texture currently loaded from official `three-globe` example CDN:
+  - `https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg`
 
 ## Imported Images
 
@@ -93,3 +98,6 @@ clear reuse permission.
 - Prefer locally hosted copies over runtime hotlinking.
 - If an image is replaced later, update this file with the new source and
   license basis.
+- If the observatory globe is kept long-term, replace the external earth
+  texture with a locally hosted asset that has clearly documented license
+  status.
