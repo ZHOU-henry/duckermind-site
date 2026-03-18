@@ -9,7 +9,7 @@ Static company and program site system for `duckermind.com` and
   - root homepage for `duckermind.com`
   - portfolio architecture page
   - operating-model page
-  - umbrella pages for `Polis`, `Kinema`, and `Autogenesis`
+  - top-level project pages for `Polis`, `Kinema`, `Autogenesis`, and `DuckerChat`
   - preserved subproject pages for `Agora`, `Noesis`, `Peras`, `Titan`, and `Physis`
   - a new `Mimesis` biomimetic subproject page under `Autogenesis`
 - `site-agora/`
@@ -42,19 +42,19 @@ own static root without changing the public brand map.
 
 ## Current Public Architecture
 
-Duckermind now presents three umbrella programs on the public site:
+Duckermind now presents four top-level programs on the public site:
 
 - `Polis`
   - `Agora`
   - `Noesis`
   - `Peras`
-  - `Chorus`
 - `Kinema`
   - `Titan`
   - `Physis`
 - `Autogenesis`
   - `AI4AI`
   - `Mimesis`
+- `DuckerChat`
 
 ## Suggested Deployment On The Server
 
