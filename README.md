@@ -9,7 +9,9 @@ Static company and program site system for `duckermind.com` and
   - root homepage for `duckermind.com`
   - portfolio architecture page
   - operating-model page
-  - detail pages for Agora, Noesis, Peras, Physis, Titan, and Autogenesis
+  - umbrella pages for `Polis`, `Kinema`, and `Autogenesis`
+  - preserved subproject pages for `Agora`, `Noesis`, `Peras`, `Titan`, and `Physis`
+  - a new `Mimesis` biomimetic subproject page under `Autogenesis`
 - `site-agora/`
   - standalone premium static surface for `agora.duckermind.com`
 - `docs/design-reference-atlas.md`
@@ -37,6 +39,21 @@ This gives the parent company and the lead product their own public surfaces
 immediately while keeping the rest of the portfolio on a low-friction routing
 ladder. Later, any subdomain can move from `redir` to `reverse_proxy` or its
 own static root without changing the public brand map.
+
+## Current Public Architecture
+
+Duckermind now presents three umbrella programs on the public site:
+
+- `Polis`
+  - `Agora`
+  - `Noesis`
+  - `Peras`
+- `Kinema`
+  - `Titan`
+  - `Physis`
+- `Autogenesis`
+  - `AI4AI`
+  - `Mimesis`
 
 ## Suggested Deployment On The Server
 
