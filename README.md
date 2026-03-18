@@ -48,6 +48,7 @@ Duckermind now presents three umbrella programs on the public site:
   - `Agora`
   - `Noesis`
   - `Peras`
+  - `Chorus`
 - `Kinema`
   - `Titan`
   - `Physis`

@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chorus Deliberation Graph | Duckermind</title>
+    <meta
+      name="description"
+      content="Interactive prototype for Chorus, the Polis subproject for human-visible multi-agent deliberation."
+    />
+    <link rel="stylesheet" href="/assets/styles.css?v=20260318a" />
+    <script defer src="/assets/site.js?v=20260318a"></script>
+    <style>
+      .chorus-prototype-shell {
+        display: grid;
+        gap: 20px;
+      }
+      .chorus-app {
+        display: grid;
+        gap: 20px;
+      }
+      .chorus-app .chorus-panel,
+      .chorus-app .chorus-composer {
+        border: 1px solid rgba(18, 23, 34, 0.08);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 18px 42px rgba(18, 32, 45, 0.08);
+      }
+      .chorus-app .chorus-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+        gap: 20px;
+      }
+      .chorus-app .chorus-eyebrow {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(196, 79, 26, 0.12);
+        color: #c44f1a;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .chorus-app .chorus-hero h2 {
+        margin: 14px 0 12px;
+        font-size: clamp(28px, 4vw, 46px);
+        line-height: 1.02;
+      }
+      .chorus-app .chorus-hero p {
+        margin: 0;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+      .chorus-app .chorus-composer,
+      .chorus-app .chorus-panel {
+        padding: 18px;
+      }
+      .chorus-app .chorus-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) 340px;
+        gap: 20px;
+      }
+      .chorus-app .chorus-sidebar {
+        display: grid;
+        gap: 20px;
+      }
+      .chorus-app textarea,
+      .chorus-app button {
+        font: inherit;
+      }
+      .chorus-app textarea {
+        width: 100%;
+        margin-top: 10px;
+        padding: 14px 16px;
+        border: 1px solid rgba(18, 23, 34, 0.08);
+        border-radius: 18px;
+        resize: vertical;
+        background: #fff;
+      }
+      .chorus-app .chorus-composer-actions,
+      .chorus-app .chorus-chip-row,
+      .chorus-app .chorus-tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chorus-app .chorus-composer-actions {
+        margin-top: 12px;
+      }
+      .chorus-app button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 16px;
+        background: #c44f1a;
+        color: white;
+        cursor: pointer;
+      }
+      .chorus-app button.secondary {
+        background: rgba(18, 23, 34, 0.08);
+        color: var(--ink);
+      }
+      .chorus-app .chorus-panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .chorus-app .chorus-panel-head h3,
+      .chorus-app .chorus-stack h4,
+      .chorus-app .chorus-node-title {
+        margin: 0;
+      }
+      .chorus-app .chorus-chip {
+        border: 1px solid rgba(18, 23, 34, 0.08);
+        border-radius: 999px;
+        padding: 7px 11px;
+        background: white;
+        color: var(--ink-soft);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .chorus-app .chorus-chip.active {
+        background: #c44f1a;
+        border-color: #c44f1a;
+        color: white;
+      }
+      .chorus-app #graphView {
+        width: 100%;
+        min-height: 560px;
+        border-radius: 20px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 249, 243, 0.94));
+      }
+      .chorus-app .chorus-message-list {
+        display: grid;
+        gap: 12px;
+        max-height: 680px;
+        overflow: auto;
+      }
+      .chorus-app .chorus-message {
+        border: 1px solid rgba(18, 23, 34, 0.08);
+        border-radius: 20px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.84);
+      }
+      .chorus-app .chorus-message-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .chorus-app .chorus-message-title {
+        font-weight: 700;
+      }
+      .chorus-app .chorus-message-body,
+      .chorus-app .chorus-node-meta {
+        line-height: 1.58;
+        color: var(--ink-soft);
+      }
+      .chorus-app .chorus-tag {
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: rgba(18, 23, 34, 0.06);
+        color: var(--ink-soft);
+        font-size: 12px;
+      }
+      .chorus-app .chorus-agent-card,
+      .chorus-app .chorus-stack {
+        display: grid;
+        gap: 16px;
+      }
+      .chorus-app .chorus-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .chorus-app .chorus-stat {
+        border: 1px solid rgba(18, 23, 34, 0.08);
+        border-radius: 18px;
+        padding: 10px 12px;
+        background: white;
+      }
+      .chorus-app .chorus-stat strong {
+        display: block;
+        margin-top: 5px;
+      }
+      .chorus-app ul {
+        margin: 10px 0 0;
+        padding-left: 20px;
+        color: var(--ink-soft);
+      }
+      .chorus-app .chorus-graph-label {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .chorus-app .chorus-graph-role {
+        font-size: 12px;
+        fill: #647181;
+      }
+      @media (max-width: 1160px) {
+        .chorus-app .chorus-hero,
+        .chorus-app .chorus-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="theme-noesis">
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-copy">
+              <strong>Duckermind</strong>
+              <span>Chorus Deliberation Graph</span>
+            </span>
+          </a>
+          <div class="header-stack">
+            <nav class="nav" aria-label="Primary">
+              <a href="/">Home</a>
+              <a href="/projects/chorus/">Chorus</a>
+              <a href="/projects/polis/">Polis</a>
+              <a href="#contact">Contact</a>
+            </nav>
+            <nav class="subdomain-nav" aria-label="Project domains">
+              <a href="/projects/polis/">Polis</a>
+              <a href="/projects/kinema/">Kinema</a>
+              <a href="/projects/autogenesis/">Autogenesis</a>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="section">
+          <div class="chorus-prototype-shell">
+            <div class="panel" data-reveal>
+              <span class="section-kicker">Interactive Prototype</span>
+              <h1 class="card-title">See how a Chorus room turns one human question into a visible graph of agent reasoning.</h1>
+              <p class="section-note">This is a local-first prototype. The point is to make planning, evidence routing, challenge, and convergence inspectable rather than hidden behind one final answer.</p>
+              <div class="button-row" style="margin-top: 16px">
+                <a class="button" href="https://github.com/ZHOU-henry/Polis/tree/main/subprojects/chorus">Open GitHub</a>
+                <a class="button-secondary" href="/projects/chorus/">Back to Chorus</a>
+                <a class="button-tertiary" href="/projects/polis/">Open Polis</a>
+              </div>
+            </div>
+
+            <div class="chorus-app" id="chorusPrototype">
+              <header class="chorus-hero">
+                <div class="chorus-panel">
+                  <span class="chorus-eyebrow">Polis / Chorus</span>
+                  <h2>Multi-agent deliberation rooms with visible graph loops.</h2>
+                  <p>Chorus turns one human question into a directed room graph where independent agents plan, challenge, route evidence, and converge into a synthesis artifact.</p>
+                </div>
+                <form class="chorus-composer" id="composer">
+                  <label for="promptInput">Room question</label>
+                  <textarea id="promptInput" rows="4"></textarea>
+                  <div class="chorus-composer-actions">
+                    <button type="submit">Restart Room</button>
+                    <button type="button" id="advanceButton" class="secondary">Advance Loop</button>
+                  </div>
+                </form>
+              </header>
+
+              <div class="chorus-grid">
+                <section class="chorus-panel">
+                  <div class="chorus-panel-head">
+                    <h3>Deliberation Graph</h3>
+                    <div class="chorus-chip-row" id="stageFilters"></div>
+                  </div>
+                  <svg id="graphView" viewBox="0 0 1000 560" role="img" aria-label="Agent deliberation graph"></svg>
+                </section>
+
+                <section class="chorus-panel">
+                  <div class="chorus-panel-head">
+                    <h3>Room Timeline</h3>
+                    <p id="timelineMeta"></p>
+                  </div>
+                  <div class="chorus-message-list" id="messageList"></div>
+                </section>
+
+                <aside class="chorus-sidebar">
+                  <section class="chorus-panel">
+                    <div class="chorus-panel-head">
+                      <h3>Selected Node</h3>
+                    </div>
+                    <div id="agentCard"></div>
+                  </section>
+
+                  <section class="chorus-panel">
+                    <div class="chorus-panel-head">
+                      <h3>Synthesis State</h3>
+                    </div>
+                    <div class="chorus-stack">
+                      <div>
+                        <h4>Consensus</h4>
+                        <ul id="consensusList"></ul>
+                      </div>
+                      <div>
+                        <h4>Minority / tension</h4>
+                        <ul id="tensionList"></ul>
+                      </div>
+                      <div>
+                        <h4>Next actions</h4>
+                        <ul id="actionList"></ul>
+                      </div>
+                    </div>
+                  </section>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="contact">
+          <div class="contact-band" data-reveal>
+            <div class="contact-grid">
+              <div>
+                <span class="section-kicker">Contact Us</span>
+                <h2 class="card-title">Talk to Duckermind about Chorus.</h2>
+                <p class="section-note">Multi-agent rooms, synthesis interfaces, and human-visible reasoning systems.</p>
+              </div>
+              <div class="button-row">
+                <a class="button" href="mailto:zhouzehao2018@163.com">zhouzehao2018@163.com</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/assets/chorus-prototype.js?v=20260318b"></script>
+  </body>
+</html>
