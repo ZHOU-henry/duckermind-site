@@ -81,3 +81,26 @@ For remote sync from a local machine, use:
 DUCKERMIND_SSH_KEY=/path/to/Duckermind-main.pem \
   ./scripts/deploy-duckermind-sites.sh admin@your-server
 ```
+
+## DuckerChat Demo Data Sync
+
+The DuckerChat web demo now supports large static or semi-static society graphs,
+including:
+
+- `100` agent mode
+- `1000` agent mode
+- `overview` edge density
+- `complex` edge density
+
+Refresh those static graph payloads from the local DuckerChat runtime with:
+
+```bash
+./scripts/sync-duckerchat-demo-data.sh /path/to/DuckerChat
+```
+
+Or run the combined publish flow:
+
+```bash
+DUCKERMIND_SSH_KEY=/path/to/Duckermind-main.pem \
+  ./scripts/publish-duckerchat-demo.sh admin@your-server /path/to/DuckerChat
+```

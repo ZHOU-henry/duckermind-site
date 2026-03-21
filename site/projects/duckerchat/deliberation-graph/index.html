@@ -8,7 +8,7 @@
       name="description"
       content="DuckerChat 的静态网页演示版本，展示 Social Rooms、Question Forge 与 Ultimate Prediction 的界面形态。"
     />
-    <link rel="stylesheet" href="/assets/duckerchat-prototype.css?v=20260319a" />
+    <link rel="stylesheet" href="/assets/duckerchat-prototype.css?v=20260321a" />
   </head>
   <body>
     <div class="duckerchat-shell" id="chorusApp">
@@ -68,6 +68,7 @@
                   </div>
                 </div>
                 <div class="duckerchat-chip-row" id="predictionViewTabs"></div>
+                <div class="duckerchat-chip-row" id="predictionSocietyControls" hidden></div>
                 <div class="duckerchat-prediction-stage">
                   <div class="duckerchat-prediction-graph-shell">
                     <svg id="predictionGraphView" viewBox="0 0 1000 560" role="img" aria-label="Ultimate prediction graph"></svg>
@@ -193,6 +194,7 @@
       </aside>
     </div>
 
-    <script src="/assets/duckerchat-prototype.js?v=20260319a"></script>
+    <script id="duckerchat-config" type="application/json">{"apiBase":"","basePath":""}</script>
+    <script src="/assets/duckerchat-prototype.js?v=20260321a"></script>
   </body>
 </html>

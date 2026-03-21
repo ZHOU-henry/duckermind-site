@@ -1,4 +1,16 @@
-const API_BASE = "";
+function readClientConfig() {
+  const configEl = document.querySelector("#duckerchat-config");
+  if (!configEl) return {};
+  try {
+    return JSON.parse(configEl.textContent || "{}");
+  } catch {
+    return {};
+  }
+}
+
+const CLIENT_CONFIG = readClientConfig();
+const API_BASE = String(CLIENT_CONFIG.apiBase || "").replace(/\/$/, "");
+const STATIC_SOCIETY_GRAPH_ROOT = "/assets/data";
 
 const state = {
   agents: [],
@@ -12,6 +24,11 @@ const state = {
   refreshTimer: null,
   consoleCollapsed: true,
   predictionView: "coalitions",
+  predictionSocietySize: 100,
+  predictionSocietyEdgeMode: "overview",
+  predictionSocietyGraph: null,
+  predictionSocietyGraphCacheKey: null,
+  predictionSocietyLoading: false,
   selectedPredictionNodeId: null,
   predictionCamera: {
     zoom: 1,
@@ -357,11 +374,11 @@ const FALLBACK_BUNDLES = {
       title: "终极预测室",
       community: "DuckerChat Society",
       module: "ultimate_prediction",
-      prompt: "当人类提出一个复杂问题时，如何让一个最多 100 个 agent 的研究团体先低成本形成素材，再经过联盟整合与裁定，输出比任何单个 agent 更强的答案？",
+      prompt: "当人类提出一个复杂问题时，如何让一个最多 1000 个 agent 的研究团体先低成本形成素材，再经过联盟整合与裁定，输出比任何单个 agent 更强的答案？",
       blurb: "一个以研究团体为核心对象的终极预测 room，中间主舞台是图谱而不是群聊流。",
       tags: ["终极预测", "研究团体", "图谱", "联盟裁定"],
       activeAgentIds: ["human", "atlas", "lumen", "mira", "sable", "forge", "synthesis"],
-      population: 100
+      population: 1000
     },
     events: [
       {
@@ -370,7 +387,7 @@ const FALLBACK_BUNDLES = {
         speaker: "human",
         target: null,
         title: "Henry 发起终极预测室",
-        body: "如果一个问题广播到 100 个 agent，怎样在不浪费 token 的前提下让他们形成比单点更强的答案？",
+        body: "如果一个问题广播到 1000 个 agent，怎样在不浪费 token 的前提下让他们形成比单点更强的答案？",
         sources: ["房间问题"],
         createdAt: "2026-03-19T09:00:00Z",
         visibility: "public"
@@ -394,7 +411,7 @@ const FALLBACK_BUNDLES = {
       synthesis: {
         direction: "先让全体感知，再让少量前线节点起草，最后通过联盟与裁定收束。",
         consensus: [
-          "100 个 agent 不应该一开始就同时跑重模型。",
+          "1000 个 agent 不应该一开始就同时跑重模型。",
           "终极预测室的主舞台应该是可交互关系图。"
         ],
         tensions: ["前线筛选器过强会丢掉真正的少数派。"],
@@ -423,8 +440,8 @@ const FALLBACK_BUNDLES = {
     },
     predictionState: {
       phase: "scouting",
-      population: 100,
-      scoutCount: 100,
+      population: 1000,
+      scoutCount: 1000,
       frontlineAgentIds: ["atlas", "lumen", "mira", "sable", "forge"],
       participantAgentIds: ["atlas", "lumen", "mira", "sable", "forge"],
       arbitratorIds: ["atlas", "lumen", "sable"],
@@ -486,7 +503,7 @@ const FALLBACK_BUNDLES = {
           phase: "scouting",
           at: "2026-03-19T09:00:00.000Z",
           headline: "全体素材感知",
-          summary: "100 个 society 节点先在低成本层面形成素材池。"
+          summary: "1000 个 society 节点先在低成本层面形成素材池。"
         },
         {
           phase: "frontline",
@@ -582,6 +599,7 @@ const predictionGraphViewEl = document.querySelector("#predictionGraphView");
 const predictionTitleEl = document.querySelector("#predictionTitle");
 const predictionMetaEl = document.querySelector("#predictionMeta");
 const predictionViewTabsEl = document.querySelector("#predictionViewTabs");
+const predictionSocietyControlsEl = document.querySelector("#predictionSocietyControls");
 const predictionOverviewEl = document.querySelector("#predictionOverview");
 const predictionCoalitionsEl = document.querySelector("#predictionCoalitions");
 const predictionSignalsEl = document.querySelector("#predictionSignals");
@@ -699,6 +717,10 @@ function currentSocialEdges() {
   return state.roomBundle?.socialEdges?.edges || state.roomBundle?.socialEdges || [];
 }
 
+function currentSocialEdgesBundle() {
+  return state.roomBundle?.socialEdges || null;
+}
+
 function currentRuntime() {
   return state.roomBundle?.runtimeState || null;
 }
@@ -721,6 +743,10 @@ function currentAuthorityLog() {
 
 function currentPredictionReplay() {
   return state.roomBundle?.predictionReplay || null;
+}
+
+function currentPredictionSocietyGraph() {
+  return state.predictionSocietyGraph || null;
 }
 
 function currentDiagnostics() {
@@ -824,8 +850,9 @@ async function fetchJson(pathname, init) {
 
 async function refreshLiveState() {
   const activeRoomId = state.activeRoomId;
+  const isPrediction = state.activeModule === "ultimate_prediction";
   const agentPath = activeRoomId
-    ? `/api/agents?minimal=1&roomId=${encodeURIComponent(activeRoomId)}`
+    ? `/api/agents?minimal=1&roomId=${encodeURIComponent(activeRoomId)}${isPrediction ? "&spotlight=1" : ""}`
     : "/api/agents?minimal=1";
   const [agentPayload, roomPayload] = await Promise.all([
     fetchJson(agentPath),
@@ -844,6 +871,56 @@ async function refreshLiveState() {
   state.activeRoomId = nextRoomId;
   if (state.activeRoomId) {
     await loadRoomBundle(state.activeRoomId);
+  }
+}
+
+function predictionSocietyGraphRequestKey() {
+  const room = currentRoom();
+  const prediction = currentPredictionState();
+  const socialEdgesBundle = currentSocialEdgesBundle();
+  if (!room || room.module !== "ultimate_prediction") return null;
+  return [
+    room.id,
+    state.predictionSocietySize,
+    state.predictionSocietyEdgeMode,
+    prediction?.updatedAt || prediction?.phase || "none",
+    socialEdgesBundle?.updatedAt || "none"
+  ].join("::");
+}
+
+async function ensurePredictionSocietyGraph(force = false) {
+  if (!(state.mode === "live" || state.mode === "fallback") || !isPredictionRoom() || state.predictionView !== "society") {
+    return;
+  }
+  const cacheKey = predictionSocietyGraphRequestKey();
+  if (!cacheKey) return;
+  if (!force && state.predictionSocietyGraphCacheKey === cacheKey && state.predictionSocietyGraph) {
+    return;
+  }
+  if (state.predictionSocietyLoading) return;
+
+  state.predictionSocietyLoading = true;
+  try {
+    const payload = state.mode === "fallback"
+      ? await fetchJson(
+        `${STATIC_SOCIETY_GRAPH_ROOT}/duckerchat-society-${encodeURIComponent(state.predictionSocietySize)}-${encodeURIComponent(state.predictionSocietyEdgeMode)}.json`
+      )
+      : await fetchJson(
+        `/api/rooms/${encodeURIComponent(state.activeRoomId)}/ultimate-prediction/society-graph?size=${encodeURIComponent(state.predictionSocietySize)}&edgeMode=${encodeURIComponent(state.predictionSocietyEdgeMode)}`
+      );
+    state.predictionSocietyGraph = payload;
+    state.predictionSocietyGraphCacheKey = cacheKey;
+    if (
+      state.selectedPredictionNodeId
+      && !payload.nodes?.some((node) => node.id === state.selectedPredictionNodeId)
+    ) {
+      state.selectedPredictionNodeId = null;
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    state.predictionSocietyLoading = false;
+    render();
   }
 }
 
@@ -1270,6 +1347,11 @@ function renderGraph() {
 }
 
 function predictionGraphNodes() {
+  const societyGraph = currentPredictionSocietyGraph();
+  if (societyGraph?.nodes?.length) {
+    return societyGraph.nodes;
+  }
+
   const room = currentRoom();
   const prediction = currentPredictionState();
   if (!room || !prediction) return [];
@@ -1305,6 +1387,11 @@ function predictionGraphNodes() {
 }
 
 function predictionInteractionEdges() {
+  const societyGraph = currentPredictionSocietyGraph();
+  if (societyGraph?.edges?.length) {
+    return societyGraph.edges;
+  }
+
   const room = currentRoom();
   const prediction = currentPredictionState();
   if (!room || !prediction) return [];
@@ -1412,6 +1499,58 @@ function renderPredictionViewTabs() {
     });
     predictionViewTabsEl.appendChild(button);
   });
+}
+
+function renderPredictionSocietyControls() {
+  const showControls = isPredictionRoom() && state.predictionView === "society";
+  predictionSocietyControlsEl.hidden = !showControls;
+  if (!showControls) {
+    predictionSocietyControlsEl.innerHTML = "";
+    return;
+  }
+
+  const graph = currentPredictionSocietyGraph();
+  const stats = graph?.stats || {};
+  const infoLabel = state.predictionSocietyLoading
+    ? "加载中..."
+    : graph
+      ? `节点 ${stats.nodeCount || 0} · 边 ${stats.edgeCount || 0}`
+      : "准备载入社会图";
+
+  predictionSocietyControlsEl.innerHTML = "";
+  [
+    { id: "size-100", label: "100 节点", active: state.predictionSocietySize === 100, onClick: async () => {
+      state.predictionSocietySize = 100;
+      state.selectedPredictionNodeId = null;
+      await ensurePredictionSocietyGraph(true);
+    } },
+    { id: "size-1000", label: "1000 节点", active: state.predictionSocietySize === 1000, onClick: async () => {
+      state.predictionSocietySize = 1000;
+      state.selectedPredictionNodeId = null;
+      await ensurePredictionSocietyGraph(true);
+    } },
+    { id: "edge-overview", label: "概览边", active: state.predictionSocietyEdgeMode === "overview", onClick: async () => {
+      state.predictionSocietyEdgeMode = "overview";
+      await ensurePredictionSocietyGraph(true);
+    } },
+    { id: "edge-complex", label: "复杂边", active: state.predictionSocietyEdgeMode === "complex", onClick: async () => {
+      state.predictionSocietyEdgeMode = "complex";
+      await ensurePredictionSocietyGraph(true);
+    } }
+  ].forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `duckerchat-chip${item.active ? " active" : ""}`;
+    button.textContent = item.label;
+    button.disabled = state.predictionSocietyLoading;
+    button.addEventListener("click", item.onClick);
+    predictionSocietyControlsEl.appendChild(button);
+  });
+
+  const status = document.createElement("span");
+  status.className = "duckerchat-chip";
+  status.textContent = infoLabel;
+  predictionSocietyControlsEl.appendChild(status);
 }
 
 function predictionCoalitionLayout() {
@@ -1554,8 +1693,18 @@ function renderPredictionArena() {
   const prediction = currentPredictionState();
   predictionArenaEl.hidden = false;
   renderPredictionViewTabs();
+  renderPredictionSocietyControls();
+  if (state.predictionView === "society") {
+    ensurePredictionSocietyGraph();
+  }
   predictionTitleEl.textContent = "终极预测关系图";
-  predictionMetaEl.textContent = `阶段 ${prediction?.phase || "未知"} · 前线 ${prediction?.frontlineAgentIds?.length || 0} · 联盟 ${prediction?.coalitions?.length || 0} · 当前视图 ${state.predictionView}`;
+  predictionMetaEl.textContent = (() => {
+    if (state.predictionView === "society" && currentPredictionSocietyGraph()?.stats) {
+      const stats = currentPredictionSocietyGraph().stats;
+      return `阶段 ${prediction?.phase || "未知"} · 节点 ${stats.nodeCount || 0} · 关系 ${stats.edgeCount || 0} · 当前视图 ${state.predictionView}`;
+    }
+    return `阶段 ${prediction?.phase || "未知"} · 前线 ${prediction?.frontlineAgentIds?.length || 0} · 联盟 ${prediction?.coalitions?.length || 0} · 当前视图 ${state.predictionView}`;
+  })();
 
   predictionOverviewEl.innerHTML = prediction
     ? `
@@ -1567,6 +1716,10 @@ function renderPredictionArena() {
           <span class="duckerchat-chip">前线 ${prediction.frontlineAgentIds?.length || 0}</span>
           <span class="duckerchat-chip">裁定 ${prediction.arbitratorIds?.length || 0}</span>
         </div>
+        ${state.predictionView === "society" && currentPredictionSocietyGraph()?.stats
+          ? `<p class="duckerchat-note">当前社会图：${escapeHtml(String(currentPredictionSocietyGraph().stats.nodeCount || 0))} 个节点，${escapeHtml(String(currentPredictionSocietyGraph().stats.edgeCount || 0))} 条关系，默认使用确定性半静态布局以保证 web 可交互。</p>`
+          : ""
+        }
         ${(prediction.participantAgentIds || []).length ? `<p class="duckerchat-note">本轮参与者：${escapeHtml((prediction.participantAgentIds || []).slice(0, 8).map((agentId) => (byId(state.agents, agentId) || {}).label || agentId).join("、"))}</p>` : ""}
       </div>
     `
@@ -1605,6 +1758,24 @@ function renderPredictionArena() {
         </div>
       </div>
     `).join("") || `<div class="duckerchat-prediction-card"><p>还没有 claim graph。</p></div>`;
+  } else if (state.predictionView === "society") {
+    const graph = currentPredictionSocietyGraph();
+    if (state.predictionSocietyLoading && !graph) {
+      predictionCoalitionsEl.innerHTML = `<div class="duckerchat-prediction-card"><p>正在载入大规模社会图...</p></div>`;
+    } else if (graph?.stats) {
+      const clusterCards = (graph.stats.clusterCounts || []).map((entry) => `
+        <div class="duckerchat-prediction-card">
+          <strong>${escapeHtml(entry.label || entry.cluster)}</strong>
+          <p>${escapeHtml(entry.description || "该群落中的 agent 在社会图中共享相近的职业和互动位置。")}</p>
+          <div class="duckerchat-chip-row">
+            <span class="duckerchat-chip">节点 ${entry.count}</span>
+          </div>
+        </div>
+      `).join("");
+      predictionCoalitionsEl.innerHTML = clusterCards || `<div class="duckerchat-prediction-card"><p>还没有社会图摘要。</p></div>`;
+    } else {
+      predictionCoalitionsEl.innerHTML = `<div class="duckerchat-prediction-card"><p>社会图尚未载入。</p></div>`;
+    }
   } else {
     predictionCoalitionsEl.innerHTML = (prediction?.coalitions || []).map((coalition) => `
       <div class="duckerchat-prediction-card">
@@ -1684,6 +1855,29 @@ function renderPredictionArena() {
           </div>
         `;
       }
+      if (focusedNode.kind === "agent" || focusedNode.kind === "human" || focusedNode.kind === "artifact") {
+        const graph = currentPredictionSocietyGraph();
+        const adjacent = (graph?.edges || [])
+          .filter((edge) => edge.source === focusedNode.id || edge.target === focusedNode.id)
+          .sort((left, right) => (right.weight || 0) - (left.weight || 0))
+          .slice(0, 6);
+        const neighborIds = adjacent.map((edge) => edge.source === focusedNode.id ? edge.target : edge.source);
+        const neighbors = neighborIds
+          .map((agentId) => (graph?.nodes || []).find((node) => node.id === agentId))
+          .filter(Boolean);
+        return `
+          <div class="duckerchat-prediction-card">
+            <strong>${escapeHtml(focusedNode.label || focusedNode.id)}</strong>
+            <p>${escapeHtml(focusedNode.role || focusedNode.kind || "agent")} · ${escapeHtml(focusedNode.cluster || "unknown")}</p>
+            <div class="duckerchat-chip-row">
+              <span class="duckerchat-chip">关系 ${adjacent.length}</span>
+              <span class="duckerchat-chip">前线 ${focusedNode.isFrontline ? "是" : "否"}</span>
+              <span class="duckerchat-chip">裁定 ${focusedNode.isArbiter ? "是" : "否"}</span>
+            </div>
+            ${neighbors.length ? `<p>${escapeHtml(neighbors.map((node) => node.label || node.id).join("、"))}</p>` : ""}
+          </div>
+        `;
+      }
       return "";
     })()
     : "";
@@ -1715,7 +1909,17 @@ function renderPredictionArena() {
     line.setAttribute("y2", target.py ?? target.y);
     line.setAttribute("stroke-width", String(Math.max(1.2, edge.weight || 1)));
     const stroke =
-      edge.kind === "arbitration"
+      edge.kind === "social"
+        ? edge.dominantDimension === "rivalry"
+          ? "rgba(161,66,98,0.32)"
+          : edge.dominantDimension === "trust"
+            ? "rgba(53,95,207,0.22)"
+            : edge.dominantDimension === "coordination"
+              ? "rgba(15,123,112,0.26)"
+              : "rgba(43,125,134,0.22)"
+        : edge.kind === "prediction-flow"
+          ? "rgba(213,122,33,0.36)"
+          : edge.kind === "arbitration"
         ? "rgba(202,91,38,0.5)"
         : edge.kind === "coalition" || edge.kind === "frontline-to-arbiter" || edge.kind === "supports" || edge.kind === "participant-loop"
           ? "rgba(43,125,134,0.34)"
@@ -1742,7 +1946,7 @@ function renderPredictionArena() {
           ? "#2b7d86"
           : node.kind === "phase"
             ? "#d57a21"
-            : (agent?.visual?.color || "#21303f");
+            : (node.color || agent?.visual?.color || "#21303f");
     circle.setAttribute("fill", fill);
     circle.setAttribute("fill-opacity", String(node.opacity ?? (node.isAmbient ? 0.2 : 0.95)));
     const selectedPrediction = state.selectedPredictionNodeId === node.id;
@@ -1752,10 +1956,8 @@ function renderPredictionArena() {
     circle.style.cursor = "pointer";
     circle.addEventListener("click", () => {
       state.selectedPredictionNodeId = node.id;
-      if (agent) {
-        state.selectedNode = node.agentId || node.id;
-        renderInspector();
-      }
+      state.selectedNode = node.agentId || node.id;
+      renderInspector();
       renderPredictionArena();
     });
     predictionGraphViewEl.appendChild(circle);
@@ -1784,7 +1986,51 @@ function renderModuleLayout() {
 }
 
 function renderInspector() {
+  const graphNode = currentPredictionSocietyGraph()?.nodes?.find((node) => node.id === state.selectedNode) || null;
   const agent = byId(state.agents, state.selectedNode) || byId(state.agents, "atlas");
+  if (!byId(state.agents, state.selectedNode) && graphNode && graphNode.kind === "agent") {
+    const graph = currentPredictionSocietyGraph();
+    const adjacent = (graph?.edges || [])
+      .filter((edge) => edge.source === graphNode.id || edge.target === graphNode.id)
+      .sort((left, right) => (right.weight || 0) - (left.weight || 0))
+      .slice(0, 10);
+    const topRelations = adjacent.map((edge) => {
+      const targetId = edge.source === graphNode.id ? edge.target : edge.source;
+      const targetNode = (graph?.nodes || []).find((node) => node.id === targetId);
+      return {
+        label: targetNode?.label || targetId,
+        kind: edge.kind,
+        dominantDimension: edge.dominantDimension || null,
+        weight: edge.weight || 0
+      };
+    });
+    agentCardEl.innerHTML = `
+      <div class="duckerchat-console-item">
+        <div class="duckerchat-message-author">
+          <div class="duckerchat-avatar" style="background:${graphNode.color || "#21303f"}">${escapeHtml((graphNode.label || graphNode.id).slice(-2))}</div>
+          <div>
+            <strong>${escapeHtml(graphNode.label || graphNode.id)}</strong>
+            <p>${escapeHtml(graphNode.role || "agent")} · ${escapeHtml(graphNode.cluster || "unknown")}</p>
+          </div>
+        </div>
+        <div class="duckerchat-monitor-grid" style="margin-top:12px">
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">类型</span><strong>${escapeHtml(graphNode.kind || "agent")}</strong></div>
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">前线</span><strong>${graphNode.isFrontline ? "是" : "否"}</strong></div>
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">参与者</span><strong>${graphNode.isParticipant ? "是" : "否"}</strong></div>
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">裁定</span><strong>${graphNode.isArbiter ? "是" : "否"}</strong></div>
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">邻接关系</span><strong>${adjacent.length}</strong></div>
+          <div class="duckerchat-monitor-card"><span class="duckerchat-note">半静态布局</span><strong>已启用</strong></div>
+        </div>
+        <div style="margin-top:12px">
+          <strong>强关系邻居</strong>
+          <div class="duckerchat-chip-row" style="margin-top:8px">
+            ${topRelations.map((relation) => `<span class="duckerchat-chip">${escapeHtml(relation.label)} · ${escapeHtml(relation.dominantDimension || relation.kind || "social")}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
   const outgoing = currentEvents().filter((event) => event.speaker === agent.id).length;
   const incoming = currentEvents().filter((event) => event.target === agent.id).length;
   const profile = agent.motivation || {};
@@ -2348,15 +2594,24 @@ async function bootstrap() {
   wireEvents();
   await loadBootstrap();
   if (state.mode === "live") {
-    state.refreshTimer = setInterval(async () => {
+    const tick = async () => {
       if (!state.activeRoomId) return;
       try {
         await refreshLiveState();
         render();
       } catch {
         // keep last good state
+      } finally {
+        const runtime = currentRuntime();
+        const activePrediction = isPredictionRoom();
+        const busy = (runtime?.scheduler?.activeRuns || []).length || (runtime?.scheduler?.queue || []).length;
+        const delay = activePrediction
+          ? (busy ? 4000 : 9000)
+          : 3000;
+        state.refreshTimer = setTimeout(tick, delay);
       }
-    }, 3000);
+    };
+    state.refreshTimer = setTimeout(tick, 3000);
   }
 }
 
